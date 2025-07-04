@@ -58,7 +58,7 @@ export function ProjectsSection() {
                   </div>
                   <CardHeader>
                     <CardTitle>{project.title}</CardTitle>
-                    <CardDescription>{project.description}</CardDescription>
+                    <CardDescription className="line-clamp-2">{project.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-wrap gap-2">
@@ -75,20 +75,20 @@ export function ProjectsSection() {
                   <CardFooter className="mt-auto pt-4">
                     <div className="flex gap-3 w-full">
                       <Button
-                        asChild
                         variant="default"
                         size="sm"
                         className="flex-1"
+                        disabled={!project.demoUrl}
                       >
                         <Link href={project.demoUrl} target="_blank">
                           Live Demo
                         </Link>
                       </Button>
                       <Button
-                        asChild
                         variant="outline"
                         size="sm"
                         className="flex-1"
+                        disabled={!project.codeUrl}
                       >
                         <Link href={project.codeUrl} target="_blank">
                           Source Code

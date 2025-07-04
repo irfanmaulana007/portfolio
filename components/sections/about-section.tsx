@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { motion } from 'framer-motion';
 import { personalInfo } from '@/lib/constants';
+import { differenceInYears } from 'date-fns';
 
 export function AboutSection() {
   return (
@@ -76,7 +77,7 @@ export function AboutSection() {
                 <Card>
                   <CardContent className="p-4">
                     <p className="font-medium">Experience</p>
-                    <p className="text-muted-foreground">X+ Years</p>
+                    <p className="text-muted-foreground">{differenceInYears(new Date(), new Date(personalInfo.be_developer_since))}+ Years</p>
                   </CardContent>
                 </Card>
               </div>
