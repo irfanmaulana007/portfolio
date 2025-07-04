@@ -1,6 +1,7 @@
 'use client';
 
 import { Separator } from '@/components/ui/separator';
+import { socialLinks } from '@/lib/constants';
 import Link from 'next/link';
 
 export function Footer() {
@@ -22,7 +23,7 @@ export function Footer() {
           <div className="flex flex-col items-center md:items-end">
             <div className="flex gap-6 mb-4">
               <Link
-                href="https://github.com/yourusername"
+                href={socialLinks.github.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
@@ -30,7 +31,7 @@ export function Footer() {
                 GitHub
               </Link>
               <Link
-                href="https://linkedin.com/in/yourusername"
+                href={socialLinks.linkedin.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
@@ -38,7 +39,7 @@ export function Footer() {
                 LinkedIn
               </Link>
               <Link
-                href="https://twitter.com/yourusername"
+                href={socialLinks.twitter.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
@@ -47,7 +48,7 @@ export function Footer() {
               </Link>
             </div>
             <p className="text-sm text-muted-foreground">
-              © {currentYear} Your Name. All rights reserved.
+              © {currentYear} Irfan Maulana. All rights reserved.
             </p>
           </div>
         </div>
