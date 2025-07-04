@@ -58,7 +58,9 @@ export function ProjectsSection() {
                   </div>
                   <CardHeader>
                     <CardTitle>{project.title}</CardTitle>
-                    <CardDescription className="line-clamp-2">{project.description}</CardDescription>
+                    <CardDescription className="line-clamp-2">
+                      {project.description}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-wrap gap-2">
@@ -78,11 +80,15 @@ export function ProjectsSection() {
                         variant="default"
                         size="sm"
                         className="flex-1"
-                        disabled={!project.demoUrl}
+                        disabled={!project.demoUrl && !project.previewImageUrl.length}
                       >
-                        <Link href={project.demoUrl} target="_blank">
-                          Live Demo
-                        </Link>
+                        {project.demoUrl ? (
+                          <Link href={project.demoUrl} target="_blank">
+                            Live Demo
+                          </Link>
+                        ) : (
+                          'Preview'
+                        )}
                       </Button>
                       <Button
                         variant="outline"

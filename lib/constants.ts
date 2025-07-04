@@ -38,6 +38,7 @@ export const projects = [
     demoUrl: 'https://h5-games-platform.vercel.app/',
     codeUrl: 'https://github.com/irfanmaulana007/h5-games-platform',
     date: '2025-07-03',
+    previewImageUrl: []
   },
   {
     id: 2,
@@ -46,9 +47,10 @@ export const projects = [
       'A comprehensive website for an Islamic boarding school featuring course management, student registration, event calendars, and a resource library. The platform serves as both an informational portal for prospective students and a management tool for administrators.',
     image: '/project-placeholder-2.jpg',
     tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI'],
-    demoUrl: 'https://mahad-albilad.vercel.app/',
+    demoUrl: 'https://mahad-albilad.or.id',
     codeUrl: 'https://github.com/irfanmaulana007/mahad-albilad-v5',
     date: '2025-01-01',
+    previewImageUrl: []
   },
   {
     id: 3,
@@ -60,6 +62,7 @@ export const projects = [
     demoUrl: '',
     codeUrl: '',
     date: '2025-03-01',
+    previewImageUrl: ['/project-placeholder-3.jpg']
   },
   {
     id: 4,
@@ -71,6 +74,7 @@ export const projects = [
     demoUrl: 'https://crazyones.noctua.gg/',
     codeUrl: '',
     date: '2024-06-01',
+    previewImageUrl: []
   },
   {
     id: 5,
@@ -82,6 +86,7 @@ export const projects = [
     demoUrl: 'https://noctua.gg/',
     codeUrl: '',
     date: '2024-01-01',
+    previewImageUrl: []
   },
   {
     id: 6,
@@ -93,6 +98,7 @@ export const projects = [
     demoUrl: '',
     codeUrl: '',
     date: '2025-01-01',
+    previewImageUrl: ['/project-placeholder-6.jpg']
   },
 ];
 
