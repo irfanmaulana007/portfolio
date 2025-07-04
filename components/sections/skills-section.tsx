@@ -51,7 +51,7 @@ export function SkillsSection() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {skillCategories.map((category, categoryIndex) => (
+            {skillCategories.map((category) => (
               <Card key={category.title} className="overflow-hidden">
                 <CardContent className="p-6">
                   <h3 className="text-xl font-semibold mb-6">

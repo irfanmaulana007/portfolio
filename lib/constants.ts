@@ -37,6 +37,7 @@ export const projects = [
     tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI'],
     demoUrl: 'https://h5-games-platform.vercel.app/',
     codeUrl: 'https://github.com/irfanmaulana007/h5-games-platform',
+    date: '2025-07-03',
   },
   {
     id: 2,
@@ -47,6 +48,7 @@ export const projects = [
     tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI'],
     demoUrl: 'https://mahad-albilad.vercel.app/',
     codeUrl: 'https://github.com/irfanmaulana007/mahad-albilad-v5',
+    date: '2025-01-01',
   },
   {
     id: 3,
@@ -57,6 +59,7 @@ export const projects = [
     tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI'],
     demoUrl: '',
     codeUrl: '',
+    date: '2025-03-01',
   },
   {
     id: 4,
@@ -67,6 +70,29 @@ export const projects = [
     tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI'],
     demoUrl: 'https://crazyones.noctua.gg/',
     codeUrl: '',
+    date: '2024-06-01',
+  },
+  {
+    id: 5,
+    title: 'Noctua Platform',
+    description:
+      'A web-based platform for Noctua, featuring engaging gameplay mechanics, character customization, and social sharing capabilities. The game incorporates brand elements while providing an entertaining experience that drives user engagement and brand awareness.',
+    image: '/project-placeholder-5.jpg',
+    tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI'],
+    demoUrl: 'https://noctua.gg/',
+    codeUrl: '',
+    date: '2024-01-01',
+  },
+  {
+    id: 6,
+    title: 'Noctua SDK Dashboard',
+    description:
+      'A web-based dashboard for Noctua SDK, featuring engaging gameplay mechanics, character customization, and social sharing capabilities. The game incorporates brand elements while providing an entertaining experience that drives user engagement and brand awareness.',
+    image: '/project-placeholder-6.jpg',
+    tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI', 'Rechart'],
+    demoUrl: '',
+    codeUrl: '',
+    date: '2025-01-01',
   },
 ];
 
