@@ -16,6 +16,11 @@ import { projects } from '@/lib/constants';
 import Image from 'next/image';
 
 export function ProjectsSection() {
+  const sortedProjectByNewest = projects.sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+  console.log('sortedProjectByNewest: ', sortedProjectByNewest);
+
   return (
     <section id="projects" className="py-20 bg-secondary/30">
       <div className="container">
@@ -33,7 +38,7 @@ export function ProjectsSection() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((project, index) => (
+            {sortedProjectByNewest.map((project, index) => (
               <motion.div
                 key={project.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -42,20 +47,14 @@ export function ProjectsSection() {
                 viewport={{ once: true }}
               >
                 <Card className="h-full flex flex-col overflow-hidden border-border/50 hover:border-border transition-all duration-300 hover:shadow-md">
-                  <div className="relative h-48 w-full">
-                    <div className="absolute inset-0 bg-muted flex items-center justify-center">
-                      <span className="text-muted-foreground">
-                        Project Image
-                      </span>
-                    </div>
-                    {/* Uncomment when you have actual images */}
-                    <Image
-                      src={project.image}
-                      alt={project.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
+                  <Image
+                    src={project.image}
+                    alt={project.title}
+                    height={300}
+                    width={600}
+                    quality={100}
+                    className="object-cover object-top"
+                  />
                   <CardHeader>
                     <CardTitle>{project.title}</CardTitle>
                     <CardDescription className="line-clamp-2">
@@ -80,7 +79,9 @@ export function ProjectsSection() {
                         variant="default"
                         size="sm"
                         className="flex-1"
-                        disabled={!project.demoUrl && !project.previewImageUrl.length}
+                        disabled={
+                          !project.demoUrl && !project.previewImageUrl.length
+                        }
                       >
                         {project.demoUrl ? (
                           <Link href={project.demoUrl} target="_blank">

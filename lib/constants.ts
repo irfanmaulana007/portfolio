@@ -33,72 +33,84 @@ export const projects = [
     title: 'h5-games-platform',
     description:
       'A modern HTML5 gaming platform built with Next.js that offers a seamless gaming experience across devices. Features include user authentication, game categorization, leaderboards, and responsive gameplay optimized for both desktop and mobile users.',
-    image: '/project-placeholder-1.jpg',
+    image: '/images/project/h5-game-platform.webp',
     tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI'],
     demoUrl: 'https://h5-games-platform.vercel.app/',
     codeUrl: 'https://github.com/irfanmaulana007/h5-games-platform',
     date: '2025-07-03',
-    previewImageUrl: []
+    previewImageUrl: [],
   },
   {
     id: 2,
     title: 'Mahad Albilad',
     description:
       'A comprehensive website for an Islamic boarding school featuring course management, student registration, event calendars, and a resource library. The platform serves as both an informational portal for prospective students and a management tool for administrators.',
-    image: '/project-placeholder-2.jpg',
+    image: '/images/project/mahad-albilad.webp',
     tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI'],
     demoUrl: 'https://mahad-albilad.or.id',
     codeUrl: 'https://github.com/irfanmaulana007/mahad-albilad-v5',
-    date: '2025-01-01',
-    previewImageUrl: []
+    date: '2024-01-01',
+    previewImageUrl: [],
   },
   {
     id: 3,
     title: 'CareGuard',
     description:
       'An advanced security management dashboard that enables real-time monitoring, incident reporting, and staff scheduling for security personnel. The system includes interactive maps, alert notifications, and comprehensive reporting tools to enhance security operations.',
-    image: '/project-placeholder-3.jpg',
-    tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI'],
+    image: '/images/project/careguard-dashboard.webp',
+    tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI', 'TanStack Query', 'Leaflet'],
     demoUrl: '',
     codeUrl: '',
     date: '2025-03-01',
-    previewImageUrl: ['/project-placeholder-3.jpg']
+    previewImageUrl: ['/images/project/careguard-dashboard.webp'],
   },
   {
     id: 4,
     title: 'CrazyOnes Official Game',
     description:
       'An interactive web-based game developed for the CrazyOnes brand, featuring engaging gameplay mechanics, character customization, and social sharing capabilities. The game incorporates brand elements while providing an entertaining experience that drives user engagement and brand awareness.',
-    image: '/project-placeholder-4.jpg',
+    image: '/images/project/crazyones-official.webp',
     tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI'],
     demoUrl: 'https://crazyones.noctua.gg/',
     codeUrl: '',
     date: '2024-06-01',
-    previewImageUrl: []
+    previewImageUrl: [],
   },
   {
     id: 5,
     title: 'Noctua Platform',
     description:
       'A web-based platform for Noctua, featuring engaging gameplay mechanics, character customization, and social sharing capabilities. The game incorporates brand elements while providing an entertaining experience that drives user engagement and brand awareness.',
-    image: '/project-placeholder-5.jpg',
-    tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI'],
+    image: '/images/project/noctua-platform.webp',
+    tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI', 'TanStack Query'],
     demoUrl: 'https://noctua.gg/',
     codeUrl: '',
-    date: '2024-01-01',
-    previewImageUrl: []
+    date: '2024-03-01',
+    previewImageUrl: [],
   },
   {
     id: 6,
     title: 'Noctua SDK Dashboard',
     description:
       'A web-based dashboard for Noctua SDK, featuring engaging gameplay mechanics, character customization, and social sharing capabilities. The game incorporates brand elements while providing an entertaining experience that drives user engagement and brand awareness.',
-    image: '/project-placeholder-6.jpg',
-    tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI', 'Rechart'],
+    image: '/images/project/noctua-sdk-dashboard.webp',
+    tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI', 'Rechart', 'TanStack Query'],
     demoUrl: '',
     codeUrl: '',
     date: '2025-01-01',
-    previewImageUrl: ['/project-placeholder-6.jpg']
+    previewImageUrl: ['/images/project/noctua-sdk-dashboard.webp'],
+  },
+  {
+    id: 7,
+    title: 'Sentra Games',
+    description:
+      'Sentra Gamers is a comprehensive gaming portal platform that serves as a one-stop destination for gamers. Our platform provides a wide range of services and features designed to enhance the gaming experience and build a vibrant gaming community.',
+    tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI'],
+    image: '/images/project/sentra-gamers.webp',
+    demoUrl: 'https://sentra-games.vercel.app/',
+    codeUrl: 'https://github.com/irfanmaulana007/sentra-games',
+    date: '2025-07-06',
+    previewImageUrl: [],
   },
 ];
 
