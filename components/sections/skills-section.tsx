@@ -24,7 +24,7 @@ const skillCategories = [
       { name: 'Git/GitHub', level: 85 },
       { name: 'Figma', level: 80 },
       { name: 'Responsive Design', level: 95 },
-      { name: 'Performance Optimization', level: 80 },
+      { name: 'Performance Optimization', level: 90 },
       { name: 'Accessibility (a11y)', level: 85 },
       { name: 'SEO Basics', level: 75 },
       { name: 'Testing (Jest, RTL)', level: 70 },
