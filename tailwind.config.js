@@ -23,6 +23,20 @@ module.exports = {
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
+        crimson: {
+          DEFAULT: '#DC143C',
+          50: '#F9D0D8',
+          100: '#F7BDC7',
+          200: '#F397A6',
+          300: '#EF7184',
+          400: '#EB4B63',
+          500: '#E72541',
+          600: '#DC143C', /* Standard crimson */
+          700: '#B11030',
+          800: '#860C25',
+          900: '#5B0819',
+          950: '#450613',
+        },
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
@@ -66,10 +80,15 @@ module.exports = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: 0 },
         },
+        'breathing': {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.1)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'breathing': 'breathing 3s ease-in-out infinite',
       },
     },
   },
