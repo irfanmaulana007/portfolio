@@ -20,10 +20,13 @@ export const socialLinks = {
     label: 'LinkedIn',
   },
   twitter: {
-    url: 'https://twitter.com/yourusername',
+    url: 'https://twitter.com/irfanmaulana007',
     label: 'Twitter',
   },
-  // Add more social links as needed
+  instagram: {
+    url: 'https://instagram.com/irfanmaulana007',
+    label: 'Instagram',
+  },
 };
 
 // Project Information

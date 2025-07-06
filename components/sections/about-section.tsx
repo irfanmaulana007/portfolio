@@ -28,7 +28,7 @@ export function AboutSection() {
             <div className="col-span-1 flex justify-center md:justify-start">
               <Avatar className="h-60 w-60">
                 <AvatarImage
-                  src="/avatar-placeholder.png"
+                  src="/images/me.webp"
                   alt="Profile picture"
                 />
                 <AvatarFallback className="text-4xl">FE</AvatarFallback>

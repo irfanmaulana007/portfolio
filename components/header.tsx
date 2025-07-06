@@ -9,10 +9,27 @@ import { navItems, personalInfo } from '@/lib/constants';
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 0);
+      
+      // Check which section is currently in view
+      const sections = navItems.map(item => item.href.substring(1));
+      
+      // Find the section that is currently in view
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          // If the section is in view (with some buffer for better UX)
+          if (rect.top <= 150 && rect.bottom >= 150) {
+            setActiveSection(section);
+            break;
+          }
+        }
+      }
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -39,20 +56,28 @@ export function Header() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          {navItems.map(item => (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={cn(
-                "transition-colors",
-                scrolled 
-                  ? "text-muted-foreground hover:text-foreground" 
-                  : "text-white/80 hover:text-white"
-              )}
-            >
-              {item.name}
-            </Link>
-          ))}
+          {navItems.map(item => {
+            const isActive = activeSection === item.href.substring(1);
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={cn(
+                  "transition-colors relative",
+                  scrolled 
+                    ? isActive 
+                      ? "text-foreground font-medium" 
+                      : "text-muted-foreground hover:text-foreground"
+                    : isActive 
+                      ? "text-white font-medium" 
+                      : "text-white/80 hover:text-white",
+                  isActive && "after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-0.5 after:bg-primary"
+                )}
+              >
+                {item.name}
+              </Link>
+            );
+          })}
           <Button asChild className={cn(
             scrolled ? "" : "bg-white text-black hover:bg-white/90"
           )}>
@@ -86,15 +111,23 @@ export function Header() {
           </SheetTrigger>
           <SheetContent>
             <div className="flex flex-col gap-6 mt-10">
-              {navItems.map(item => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="text-foreground hover:text-primary transition-colors text-lg"
-                >
-                  {item.name}
-                </Link>
-              ))}
+              {navItems.map(item => {
+                const isActive = activeSection === item.href.substring(1);
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={cn(
+                      "transition-colors text-lg",
+                      isActive 
+                        ? "text-primary font-medium" 
+                        : "text-foreground hover:text-primary"
+                    )}
+                  >
+                    {item.name}
+                  </Link>
+                );
+              })}
               <Button asChild className="mt-4">
                 <Link href="#contact">Get in Touch</Link>
               </Button>
