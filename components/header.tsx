@@ -43,7 +43,8 @@ export function Header() {
         'fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out',
         scrolled
           ? 'bg-background backdrop-blur-md border-b border-border py-3'
-          : 'bg-transparent py-8 text-white border-b border-transparent'
+          : 'bg-transparent py-8 text-white border-b border-transparent',
+          activeSection !== 'home' ? 'bg-white/80' : ''
       )}
     >
       <div className="container flex items-center justify-between">
