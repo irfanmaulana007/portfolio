@@ -1,7 +1,7 @@
 'use client';
 
 import { Separator } from '@/components/ui/separator';
-import { socialLinks } from '@/lib/constants';
+import { personalInfo, socialLinks } from '@/lib/constants';
 import Link from 'next/link';
 
 export function Footer() {
@@ -14,7 +14,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-center md:text-left">
             <Link href="#home" className="text-xl font-semibold">
-              Portfolio
+              {personalInfo.name}
             </Link>
             <p className="text-muted-foreground mt-2">
               Front-End Engineer crafting exceptional digital experiences
@@ -48,7 +48,7 @@ export function Footer() {
               </Link>
             </div>
             <p className="text-sm text-muted-foreground">
-              © {currentYear} Irfan Maulana. All rights reserved.
+              © {currentYear} {personalInfo.name}. All rights reserved.
             </p>
           </div>
         </div>

@@ -12,24 +12,28 @@ export function Header() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      setScrolled(window.scrollY > 0);
     };
 
     window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Check initial scroll position
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
     <header
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out',
         scrolled
-          ? 'bg-background/80 backdrop-blur-md border-b border-border py-3'
-          : 'bg-transparent py-5'
+          ? 'bg-background backdrop-blur-md border-b border-border py-3'
+          : 'bg-transparent py-8 text-white border-b border-transparent'
       )}
     >
       <div className="container flex items-center justify-between">
-        <Link href="#home" className="text-xl font-semibold">
+        <Link href="#home" className={cn(
+          "font-semibold transition-all duration-200 ease-in-out",
+          scrolled ? "text-xl text-black" : "text-2xl text-white"
+        )}>
           {personalInfo.name}
         </Link>
 
@@ -39,12 +43,19 @@ export function Header() {
             <Link
               key={item.name}
               href={item.href}
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className={cn(
+                "transition-colors",
+                scrolled 
+                  ? "text-muted-foreground hover:text-foreground" 
+                  : "text-white/80 hover:text-white"
+              )}
             >
               {item.name}
             </Link>
           ))}
-          <Button asChild>
+          <Button asChild className={cn(
+            scrolled ? "" : "bg-white text-black hover:bg-white/90"
+          )}>
             <Link href="#contact">Get in Touch</Link>
           </Button>
         </nav>
@@ -52,7 +63,10 @@ export function Header() {
         {/* Mobile Navigation */}
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="md:hidden">
+            <Button variant="ghost" size="icon" className={cn(
+              "md:hidden",
+              scrolled ? "" : "text-white hover:bg-white/20"
+            )}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
