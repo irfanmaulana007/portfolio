@@ -72,7 +72,7 @@ export function Header() {
                     : isActive 
                       ? "text-white font-medium" 
                       : "text-white/80 hover:text-white",
-                  isActive && "after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-0.5 after:bg-primary"
+                  isActive && "after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-0.5 after:bg-crimson-600 "
                 )}
               >
                 {item.name}
