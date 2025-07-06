@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { navItems, personalInfo } from '@/lib/constants';
 
 export function Header() {
@@ -111,6 +111,9 @@ export function Header() {
             </Button>
           </SheetTrigger>
           <SheetContent>
+            <SheetHeader>
+              <SheetTitle>Navigation</SheetTitle>
+            </SheetHeader>
             <div className="flex flex-col gap-6 mt-10">
               {navItems.map(item => {
                 const isActive = activeSection === item.href.substring(1);

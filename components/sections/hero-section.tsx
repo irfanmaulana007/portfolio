@@ -19,7 +19,7 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 0.7 }}
           className="max-w-3xl"
         >
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">
             <span className="text-crimson-600">Front-End </span>Engineer
           </h1>
         </motion.div>
@@ -29,7 +29,7 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 1 }}
           className="max-w-3xl"
         >
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 text-white">
             crafting exceptional digital experiences
           </h1>
         </motion.div>
@@ -39,7 +39,7 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 1.3 }}
           className="max-w-3xl"
         >
-          <p className="text-xl text-neutral-100 mb-8 max-w-2xl">
+          <p className="text-lg sm:text-xl text-neutral-100 mb-8 max-w-2xl">
             I build modern, responsive, and user-friendly web applications using
             cutting-edge technologies like React, Next.js, and Tailwind CSS.
           </p>
@@ -50,7 +50,7 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 1.6 }}
           className="max-w-3xl"
         >
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-2 sm:gap-4">
             <Button
               asChild
               size="lg"
