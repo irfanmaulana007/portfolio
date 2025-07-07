@@ -59,7 +59,7 @@ export function ProjectsSection() {
                   />
                   <CardHeader>
                     <CardTitle>{project.title}</CardTitle>
-                    <CardDescription className="line-clamp-2">
+                    <CardDescription className="line-clamp-2 pt-1">
                       {project.description}
                     </CardDescription>
                   </CardHeader>
@@ -75,7 +75,7 @@ export function ProjectsSection() {
                       ))}
                     </div>
                   </CardContent>
-                  <CardFooter className="mt-auto pt-4">
+                  <CardFooter className="mt-auto">
                     <div className="flex gap-3 w-full">
                       <div className="flex-1">
                         {project.demoUrl ? (
