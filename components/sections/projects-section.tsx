@@ -92,18 +92,20 @@ export function ProjectsSection() {
                           <PreviewImages images={project.previewImageUrl} />
                         )}
                       </div>
-                      <div className="flex-1">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="w-full"
-                          disabled={!project.codeUrl}
-                        >
-                          <Link href={project.codeUrl} target="_blank">
-                            Source Code
-                          </Link>
-                        </Button>
-                      </div>
+
+                      {project.codeUrl && (
+                        <div className="flex-1">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                          >
+                            <Link href={project.codeUrl} target="_blank">
+                              Source Code
+                            </Link>
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </CardFooter>
                 </Card>
