@@ -26,13 +26,20 @@ export function AboutSection() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="col-span-1 flex justify-center md:justify-start">
-              <Avatar className="h-60 w-60">
-                <AvatarImage
-                  src="/images/me.webp"
+              <div className="flex flex-col items-center gap-4">
+                <div className="flex items-center gap-2 max-h-52 max-w-52 aspect-square">
+                  <Avatar className="w-full h-full object-contain">
+                    <AvatarImage src="/images/me.webp" alt="Profile picture" />
+                    <AvatarFallback className="text-4xl">IM</AvatarFallback>
+                  </Avatar>
+                </div>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="https://github-readme-stats.vercel.app/api?username=irfanmaulana007&show_icons=true"
                   alt="Profile picture"
+                  className="w-full max-w-52 object-contain"
                 />
-                <AvatarFallback className="text-4xl">FE</AvatarFallback>
-              </Avatar>
+              </div>
             </div>
 
             <div className="col-span-1 md:col-span-2 space-y-6">
@@ -77,7 +84,13 @@ export function AboutSection() {
                 <Card>
                   <CardContent className="p-4">
                     <p className="font-medium">Experience</p>
-                    <p className="text-muted-foreground">{differenceInYears(new Date(), new Date(personalInfo.be_developer_since))}+ Years</p>
+                    <p className="text-muted-foreground">
+                      {differenceInYears(
+                        new Date(),
+                        new Date(personalInfo.be_developer_since)
+                      )}
+                      + Years
+                    </p>
                   </CardContent>
                 </Card>
               </div>
