@@ -14,12 +14,14 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { projects } from '@/lib/constants';
 import Image from 'next/image';
+import { PhotoSlider } from 'react-photo-view';
+import 'react-photo-view/dist/react-photo-view.css';
+import { useState } from 'react';
 
 export function ProjectsSection() {
   const sortedProjectByNewest = projects.sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
-  console.log('sortedProjectByNewest: ', sortedProjectByNewest);
 
   return (
     <section id="projects" className="py-20 bg-secondary/30">
@@ -75,32 +77,33 @@ export function ProjectsSection() {
                   </CardContent>
                   <CardFooter className="mt-auto pt-4">
                     <div className="flex gap-3 w-full">
-                      <Button
-                        variant="default"
-                        size="sm"
-                        className="flex-1"
-                        disabled={
-                          !project.demoUrl && !project.previewImageUrl.length
-                        }
-                      >
+                      <div className="flex-1">
                         {project.demoUrl ? (
-                          <Link href={project.demoUrl} target="_blank">
-                            Live Demo
-                          </Link>
+                          <Button
+                            variant="default"
+                            size="sm"
+                            className="w-full"
+                          >
+                            <Link href={project.demoUrl} target="_blank">
+                              Live Demo
+                            </Link>
+                          </Button>
                         ) : (
-                          'Preview'
+                          <PreviewImages images={project.previewImageUrl} />
                         )}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1"
-                        disabled={!project.codeUrl}
-                      >
-                        <Link href={project.codeUrl} target="_blank">
-                          Source Code
-                        </Link>
-                      </Button>
+                      </div>
+                      <div className="flex-1">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          disabled={!project.codeUrl}
+                        >
+                          <Link href={project.codeUrl} target="_blank">
+                            Source Code
+                          </Link>
+                        </Button>
+                      </div>
                     </div>
                   </CardFooter>
                 </Card>
@@ -110,5 +113,31 @@ export function ProjectsSection() {
         </motion.div>
       </div>
     </section>
+  );
+}
+
+function PreviewImages({ images }: { images: string[] }) {
+  const [visible, setVisible] = useState<boolean>(false);
+  const [index, setIndex] = useState<number>(0);
+
+  return (
+    <>
+      <Button
+        variant="default"
+        size="sm"
+        className="w-full"
+        onClick={() => setVisible(true)}
+      >
+        Preview
+      </Button>
+
+      <PhotoSlider
+        images={images.map(item => ({ src: item, key: item }))}
+        visible={visible}
+        onClose={() => setVisible(false)}
+        index={index}
+        onIndexChange={setIndex}
+      />
+    </>
   );
 }
