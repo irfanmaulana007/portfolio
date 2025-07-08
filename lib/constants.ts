@@ -29,7 +29,12 @@ export const socialLinks = {
   },
 };
 
-// Project Information
+export enum ProjectCategory {
+  LandingPage = 'landing_page',
+  Dashboard = 'dashboard',
+  Game = 'game',
+}
+
 export const projects = [
   {
     id: 1,
@@ -42,6 +47,7 @@ export const projects = [
     codeUrl: 'https://github.com/irfanmaulana007/h5-games-platform',
     date: '2025-07-03',
     previewImageUrl: [],
+    category: ProjectCategory.Game,
   },
   {
     id: 2,
@@ -54,6 +60,7 @@ export const projects = [
     codeUrl: 'https://github.com/irfanmaulana007/mahad-albilad-v5',
     date: '2024-01-01',
     previewImageUrl: [],
+    category: ProjectCategory.LandingPage,
   },
   {
     id: 3,
@@ -61,11 +68,19 @@ export const projects = [
     description:
       'An advanced security management dashboard that enables real-time monitoring, incident reporting, and staff scheduling for security personnel. The system includes interactive maps, alert notifications, and comprehensive reporting tools to enhance security operations.',
     image: '/images/project/careguard-dashboard.webp',
-    tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI', 'TanStack Query', 'Leaflet'],
+    tags: [
+      'Next.js',
+      'TypeScript',
+      'Tailwind CSS',
+      'Shadcn UI',
+      'TanStack Query',
+      'Leaflet',
+    ],
     demoUrl: '',
     codeUrl: '',
     date: '2025-03-01',
     previewImageUrl: ['/images/project/careguard-dashboard.webp'],
+    category: ProjectCategory.Dashboard,
   },
   {
     id: 4,
@@ -78,6 +93,7 @@ export const projects = [
     codeUrl: '',
     date: '2024-06-01',
     previewImageUrl: [],
+    category: ProjectCategory.Game,
   },
   {
     id: 5,
@@ -85,11 +101,18 @@ export const projects = [
     description:
       'A web-based platform for Noctua, featuring engaging gameplay mechanics, character customization, and social sharing capabilities. The game incorporates brand elements while providing an entertaining experience that drives user engagement and brand awareness.',
     image: '/images/project/noctua-platform.webp',
-    tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI', 'TanStack Query'],
+    tags: [
+      'Next.js',
+      'TypeScript',
+      'Tailwind CSS',
+      'Shadcn UI',
+      'TanStack Query',
+    ],
     demoUrl: 'https://noctua.gg/',
     codeUrl: '',
     date: '2024-03-01',
     previewImageUrl: [],
+    category: ProjectCategory.Game,
   },
   {
     id: 6,
@@ -97,11 +120,19 @@ export const projects = [
     description:
       'A web-based dashboard for Noctua SDK, featuring engaging gameplay mechanics, character customization, and social sharing capabilities. The game incorporates brand elements while providing an entertaining experience that drives user engagement and brand awareness.',
     image: '/images/project/noctua-sdk-dashboard.webp',
-    tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI', 'Rechart', 'TanStack Query'],
+    tags: [
+      'Next.js',
+      'TypeScript',
+      'Tailwind CSS',
+      'Shadcn UI',
+      'Rechart',
+      'TanStack Query',
+    ],
     demoUrl: '',
     codeUrl: '',
     date: '2025-01-01',
     previewImageUrl: ['/images/project/noctua-sdk-dashboard.webp'],
+    category: ProjectCategory.Dashboard,
   },
   {
     id: 7,
@@ -114,6 +145,7 @@ export const projects = [
     codeUrl: 'https://github.com/irfanmaulana007/sentra-games',
     date: '2025-07-06',
     previewImageUrl: [],
+    category: ProjectCategory.Game,
   },
 ];
 
