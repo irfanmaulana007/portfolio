@@ -83,7 +83,7 @@ export function ProjectsSection() {
 
             <div className="flex flex-wrap gap-2 pt-4 justify-center relative min-h-[42px]">
               <div
-                className="absolute left-0 h-[34px] bg-primary rounded-sm transition-all duration-300 ease-out z-0"
+                className="hidden md:block absolute left-0 h-[34px] bg-primary rounded-sm transition-all duration-300 ease-out z-0"
                 style={{
                   transform: `translateX(${indicatorStyle.left}px)`,
                   width: `${indicatorStyle.width}px`,
@@ -100,8 +100,9 @@ export function ProjectsSection() {
                   size="sm"
                   onClick={() => setActiveCategory(category)}
                   className={cn(
-                    'capitalize relative z-10 transition-colors duration-300 hover:bg-transparent hover:text-initial',
-                    activeCategory === category && 'text-white'
+                    'capitalize relative z-10 transition-colors duration-300 hover:bg-black hover:text-white md:hover:bg-transparent md:hover:text-initial',
+                    activeCategory === category &&
+                      'text-white bg-black md:bg-transparent'
                   )}
                 >
                   {category === ProjectCategory.All
