@@ -11,7 +11,7 @@ import { personalInfo, socialLinks } from '@/lib/constants';
 
 export function ContactSection() {
   return (
-    <section id="contact" className="py-20 bg-secondary/30">
+    <section id="contact" className="py-20">
       <div className="container">
         <motion.div
           initial={{ opacity: 0 }}

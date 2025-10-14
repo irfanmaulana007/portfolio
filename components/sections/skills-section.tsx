@@ -35,7 +35,10 @@ const skillCategories = [
 
 export function SkillsSection() {
   return (
-    <section id="skills" className="py-20">
+    <section
+      id="skills"
+      className="py-20 bg-[#FAFAFA] dark:bg-[#121212] relative"
+    >
       <div className="container">
         <motion.div
           initial={{ opacity: 0 }}
@@ -51,7 +54,7 @@ export function SkillsSection() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {skillCategories.map((category) => (
+            {skillCategories.map(category => (
               <Card key={category.title} className="overflow-hidden">
                 <CardContent className="p-6">
                   <h3 className="text-xl font-semibold mb-6">

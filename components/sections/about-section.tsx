@@ -9,7 +9,7 @@ import { differenceInYears } from 'date-fns';
 
 export function AboutSection() {
   return (
-    <section id="about" className="py-20">
+    <section id="about" className="py-20 bg-[#F0F0F0] dark:bg-[#181818] relative">
       <div className="container">
         <motion.div
           initial={{ opacity: 0 }}

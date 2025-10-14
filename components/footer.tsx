@@ -1,6 +1,5 @@
 'use client';
 
-import { Separator } from '@/components/ui/separator';
 import { personalInfo, socialLinks } from '@/lib/constants';
 import Link from 'next/link';
 
@@ -8,9 +7,8 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-background py-8">
+    <footer className="bg-[#F0F0F0] dark:bg-[#181818] relative py-8">
       <div className="container">
-        <Separator className="mb-8" />
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-center md:text-left">
             <Link href="#home" className="text-xl font-semibold">

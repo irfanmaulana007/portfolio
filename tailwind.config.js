@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {  
+module.exports = {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   plugins: [require('tailwindcss-animate')],
   darkMode: ['class'],
@@ -33,7 +33,7 @@ module.exports = {
           300: '#EF7184',
           400: '#EB4B63',
           500: '#E72541',
-          600: '#DC143C', /* Standard crimson */
+          600: '#DC143C' /* Standard crimson */,
           700: '#B11030',
           800: '#860C25',
           900: '#5B0819',
@@ -82,7 +82,7 @@ module.exports = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: 0 },
         },
-        'breathing': {
+        breathing: {
           '0%, 100%': { transform: 'scale(1)' },
           '50%': { transform: 'scale(1.1)' },
         },
@@ -130,7 +130,7 @@ module.exports = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'breathing': 'breathing 3s ease-in-out infinite',
+        breathing: 'breathing 3s ease-in-out infinite',
         'fade-in': 'fade-in 0.2s ease-out',
         'fade-out': 'fade-out 0.2s ease-in',
         'slide-in-from-top': 'slide-in-from-top 0.3s ease-out',

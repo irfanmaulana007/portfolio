@@ -68,7 +68,10 @@ export function ProjectsSection() {
   }, [activeCategory]);
 
   return (
-    <section id="projects" className="py-20 bg-secondary/40">
+    <section
+      id="projects"
+      className="py-20 bg-[#FAFAFA] dark:bg-[#121212] relative"
+    >
       <div className="container">
         <motion.div
           initial={{ opacity: 0 }}
@@ -154,7 +157,7 @@ export function ProjectsSection() {
                       <div className="flex-1">
                         {project.demoUrl ? (
                           <Button
-                            variant="default"
+                            variant="primary"
                             size="sm"
                             className="w-full"
                           >
@@ -170,7 +173,7 @@ export function ProjectsSection() {
                       {project.codeUrl && (
                         <div className="flex-1">
                           <Button
-                            variant="outline"
+                            variant="primary-outline"
                             size="sm"
                             className="w-full"
                           >
@@ -199,7 +202,7 @@ function PreviewImages({ images }: { images: string[] }) {
   return (
     <>
       <Button
-        variant="default"
+        variant="primary"
         size="sm"
         className="w-full"
         onClick={() => setVisible(true)}
