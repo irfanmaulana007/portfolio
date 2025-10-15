@@ -23,19 +23,21 @@ export function HeroSection() {
             transition={{ duration: 0.8, delay: 0.7 }}
             className="max-w-3xl"
           >
-            <div className="flex items-center gap-x-4">
-              <div className="flex items-center gap-2 max-h-16 max-w-16 aspect-square">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-y-2 gap-x-4">
+              <div className="flex items-center gap-2 max-w-12 max-h-12 md:max-h-16 md:max-w-16 aspect-square">
                 <Avatar className="w-full h-full object-contain">
                   <AvatarImage src="/images/me.webp" alt="Profile picture" />
                   <AvatarFallback className="text-4xl">IM</AvatarFallback>
                 </Avatar>
               </div>
-              <Text size="heading-1" weight="bold" variant="brand">
-                Front-End
-              </Text>
-              <Text size="heading-1" weight="bold" variant="primary">
-                Engineer
-              </Text>
+              <div className="flex items-center gap-x-4">
+                <Text size="heading-1" weight="bold" variant="brand">
+                  Front-End
+                </Text>
+                <Text size="heading-1" weight="bold" variant="primary">
+                  Engineer
+                </Text>
+              </div>
             </div>
           </motion.div>
           <motion.div
@@ -76,7 +78,7 @@ export function HeroSection() {
             </Button>
           </motion.div>
         </div>
-        <div className="flex flex-col gap-y-4 w-1/4">
+        <div className="flex flex-col gap-y-4 w-1/4 hidden md:block">
           <Text size="heading-5" weight="semibold" variant="primary">
             Featured projects:
           </Text>

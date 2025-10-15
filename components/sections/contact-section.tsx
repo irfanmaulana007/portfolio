@@ -133,7 +133,7 @@ ${form.name}`;
                     <div className="p-2 bg-[#F5F5F5] dark:bg-[#242424] rounded-sm">
                       <Mail className="w-5 h-5 text-[#CA3142]" />
                     </div>
-                    <div>
+                    <div className="break-all">
                       <Text size="caption" variant="secondary">
                         Email
                       </Text>

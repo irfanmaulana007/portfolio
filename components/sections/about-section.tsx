@@ -32,14 +32,14 @@ export function AboutSection() {
           </div>
 
           <div className="flex flex-col gap-y-8">
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid md:grid-cols-4 grid-cols-1 gap-4">
               <div className="col-span-1 relative z-10">
                 <Text size="display-1" weight="extrabold">
-                  Irfan Maulana
+                  {personalInfo.name}
                 </Text>
               </div>
               <div className="col-span-1 flex items-center justify-center">
-                <div className="max-h-56 max-w-56 aspect-square">
+                <div className="md:max-h-56 md:max-w-56 max-h-48 max-w-48 aspect-square">
                   <Avatar className="w-full h-full object-contain rounded-md">
                     <AvatarImage src="/images/me.webp" alt="Profile picture" />
                     <AvatarFallback className="text-4xl">IM</AvatarFallback>
@@ -47,7 +47,7 @@ export function AboutSection() {
                 </div>
               </div>
               <div className="col-span-2">
-                <div className="flex flex-col justify-between h-full">
+                <div className="flex flex-col gap-y-4 justify-between h-full">
                   <Text size="lg">
                     I&apos;m a passionate Front-End Engineer with a strong focus
                     on creating intuitive and performant user interfaces. With
@@ -67,20 +67,20 @@ export function AboutSection() {
               </div>
             </div>
 
-            <div className="grid grid-cols-10 gap-4">
-              <div className="col-span-6">
+            <div className="grid md:grid-cols-10 grid-cols-1 gap-4">
+              <div className="col-span-1 md:col-span-6">
                 <div className="h-full grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Card>
-                    <CardContent className="h-full p-4 space-y-2">
-                      <MapPin className="w-5 h-5 text-[#555555] dark:text-[#AAAAAA]" />
+                    <CardContent className="h-full p-4 flex md:flex-col flex-row items-center md:items-start gap-2">
+                      <MapPin className="w-5 h-5 text-[#555555] dark:text-[#AAAAAA] flex-shrink-0" />
                       <Text size="sm" variant="secondary">
                         {personalInfo.location}
                       </Text>
                     </CardContent>
                   </Card>
                   <Card>
-                    <CardContent className="h-full p-4 space-y-2">
-                      <Calendar className="w-5 h-5 text-[#555555] dark:text-[#AAAAAA]" />
+                    <CardContent className="h-full p-4 flex md:flex-col flex-row items-center md:items-start gap-2">
+                      <Calendar className="w-5 h-5 text-[#555555] dark:text-[#AAAAAA] flex-shrink-0" />
                       <Text size="sm" variant="secondary">
                         {differenceInYears(
                           new Date(),
@@ -91,16 +91,16 @@ export function AboutSection() {
                     </CardContent>
                   </Card>
                   <Card>
-                    <CardContent className="h-full p-4 space-y-2">
-                      <Phone className="w-5 h-5 text-[#555555] dark:text-[#AAAAAA]" />
+                    <CardContent className="h-full p-4 flex md:flex-col flex-row items-center md:items-start gap-2">
+                      <Phone className="w-5 h-5 text-[#555555] dark:text-[#AAAAAA] flex-shrink-0" />
                       <Text size="sm" variant="secondary">
                         {personalInfo.phone}
                       </Text>
                     </CardContent>
                   </Card>
                   <Card>
-                    <CardContent className="h-full p-4 space-y-2">
-                      <Mail className="w-5 h-5 text-[#555555] dark:text-[#AAAAAA]" />
+                    <CardContent className="h-full p-4 flex md:flex-col flex-row items-center md:items-start gap-2">
+                      <Mail className="w-5 h-5 text-[#555555] dark:text-[#AAAAAA] flex-shrink-0" />
                       <Text size="sm" variant="secondary">
                         {personalInfo.email}
                       </Text>
@@ -108,7 +108,7 @@ export function AboutSection() {
                   </Card>
                 </div>
               </div>
-              <div className="col-span-4">
+              <div className="col-span-1 md:col-span-4">
                 <picture>
                   {isDark ? (
                     <source srcSet="https://github-readme-stats.vercel.app/api?username=irfanmaulana007&border_color=242424&bg_color=1E1E1E&title_color=CA3142&text_color=AAAAAA&ring_color=CA3142&text_bold=false&border_radius=12" />

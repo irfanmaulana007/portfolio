@@ -10,7 +10,7 @@ export function Footer() {
   return (
     <footer className="bg-[#F0F0F0] dark:bg-[#181818] relative py-8">
       <div className="container">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="text-center md:text-left space-y-2">
             <Text size="lg">{personalInfo.name}</Text>
             <Text size="sm" variant="secondary">
