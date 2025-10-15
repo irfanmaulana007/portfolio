@@ -154,6 +154,20 @@ export const projects = [
     category: ProjectCategory.Game,
     featured: true,
   },
+  {
+    id: 8,
+    title: 'Muthia Maharani',
+    description: 'Portofolio website for Muthia Maharani, a UI/UX Designer.',
+    tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI'],
+    image: '/images/project/portofolio-muthia.webp',
+    demoUrl: 'https://muthiamhrni.com',
+    // codeUrl: 'https://github.com/irfanmaulana007/portofolio-muthia',
+    codeUrl: '',
+    date: '2025-09-27',
+    previewImageUrl: [],
+    category: ProjectCategory.LandingPage,
+    featured: true,
+  },
 ];
 
 // Skills
