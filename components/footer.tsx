@@ -2,6 +2,7 @@
 
 import { personalInfo, socialLinks } from '@/lib/constants';
 import Link from 'next/link';
+import { Text } from './ui/text';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -10,13 +11,11 @@ export function Footer() {
     <footer className="bg-[#F0F0F0] dark:bg-[#181818] relative py-8">
       <div className="container">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="text-center md:text-left">
-            <Link href="#home" className="text-xl font-semibold">
-              {personalInfo.name}
-            </Link>
-            <p className="text-muted-foreground mt-2">
+          <div className="text-center md:text-left space-y-2">
+            <Text size="lg">{personalInfo.name}</Text>
+            <Text size="sm" variant="secondary">
               Front-End Engineer crafting exceptional digital experiences
-            </p>
+            </Text>
           </div>
           <div className="flex flex-col items-center md:items-end">
             <div className="flex gap-6 mb-4">
@@ -26,7 +25,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
-                GitHub
+                <Text size="md">GitHub</Text>
               </Link>
               <Link
                 href={socialLinks.linkedin.url}
@@ -34,7 +33,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
-                LinkedIn
+                <Text size="md">LinkedIn</Text>
               </Link>
               <Link
                 href={socialLinks.twitter.url}
@@ -42,12 +41,20 @@ export function Footer() {
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
-                Twitter
+                <Text size="md">Twitter</Text>
+              </Link>
+              <Link
+                href={socialLinks.instagram.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Text size="md">Instagram</Text>
               </Link>
             </div>
-            <p className="text-sm text-muted-foreground">
+            <Text size="caption" variant="secondary">
               © {currentYear} {personalInfo.name}. All rights reserved.
-            </p>
+            </Text>
           </div>
         </div>
       </div>
