@@ -9,8 +9,33 @@ import { motion } from 'framer-motion';
 import { personalInfo, socialLinks } from '@/lib/constants';
 import { Mail, MapPin, Phone } from 'lucide-react';
 import { Text } from '../ui/text';
+import { useState } from 'react';
 
 export function ContactSection() {
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+  });
+
+  const handleSendMessage = () => {
+    const body = `Hi ${personalInfo.name},
+    
+${form.message}
+
+Best regards,
+${form.name}`;
+
+    window.open(
+      `mailto:${personalInfo.email}?subject=${form.subject}&body=${body.replace(
+        /\n/g,
+        '%0A'
+      )}`,
+      '_blank'
+    );
+  };
+
   return (
     <section id="contact" className="py-20 relative">
       <div className="container">
@@ -31,11 +56,26 @@ export function ContactSection() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Name</Label>
-                      <Input id="name" placeholder="Your name" />
+                      <Input
+                        id="name"
+                        placeholder="Your name"
+                        value={form.name}
+                        onChange={e =>
+                          setForm({ ...form, name: e.target.value })
+                        }
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
-                      <Input id="email" type="email" placeholder="Your email" />
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="Your email"
+                        value={form.email}
+                        onChange={e =>
+                          setForm({ ...form, email: e.target.value })
+                        }
+                      />
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -43,6 +83,10 @@ export function ContactSection() {
                     <Input
                       id="subject"
                       placeholder="What is your project about?"
+                      value={form.subject}
+                      onChange={e =>
+                        setForm({ ...form, subject: e.target.value })
+                      }
                     />
                   </div>
                   <div className="space-y-2">
@@ -51,9 +95,17 @@ export function ContactSection() {
                       id="message"
                       placeholder="Write your message here..."
                       rows={5}
+                      value={form.message}
+                      onChange={e =>
+                        setForm({ ...form, message: e.target.value })
+                      }
                     />
                   </div>
-                  <Button type="submit" className="w-full">
+                  <Button
+                    type="button"
+                    className="w-full"
+                    onClick={handleSendMessage}
+                  >
                     Send Message
                   </Button>
                 </form>
