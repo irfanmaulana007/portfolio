@@ -48,6 +48,7 @@ export const projects = [
     date: '2025-07-03',
     previewImageUrl: [],
     category: ProjectCategory.Game,
+    featured: false,
   },
   {
     id: 2,
@@ -61,6 +62,7 @@ export const projects = [
     date: '2024-01-01',
     previewImageUrl: [],
     category: ProjectCategory.LandingPage,
+    featured: false,
   },
   {
     id: 3,
@@ -81,6 +83,7 @@ export const projects = [
     date: '2025-03-01',
     previewImageUrl: ['/images/project/careguard-dashboard.webp'],
     category: ProjectCategory.Dashboard,
+    featured: false,
   },
   {
     id: 4,
@@ -94,6 +97,7 @@ export const projects = [
     date: '2024-06-01',
     previewImageUrl: [],
     category: ProjectCategory.Game,
+    featured: true,
   },
   {
     id: 5,
@@ -113,6 +117,7 @@ export const projects = [
     date: '2024-03-01',
     previewImageUrl: [],
     category: ProjectCategory.Game,
+    featured: true,
   },
   {
     id: 6,
@@ -133,6 +138,7 @@ export const projects = [
     date: '2025-01-01',
     previewImageUrl: ['/images/project/noctua-sdk-dashboard.webp'],
     category: ProjectCategory.Dashboard,
+    featured: false,
   },
   {
     id: 7,
@@ -146,6 +152,7 @@ export const projects = [
     date: '2025-07-06',
     previewImageUrl: [],
     category: ProjectCategory.Game,
+    featured: true,
   },
 ];
 
