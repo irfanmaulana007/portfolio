@@ -136,7 +136,7 @@ export function ProjectsSection() {
                       className="object-cover object-top"
                     />
                   </div>
-                  <CardHeader className='py-3'>
+                  <CardHeader className="py-3">
                     <Text size="heading-5" weight="bold">
                       {project.title}
                     </Text>
@@ -144,7 +144,7 @@ export function ProjectsSection() {
                       {project.description}
                     </Text>
                   </CardHeader>
-                  <CardContent className='py-3 border-t border-b border-[#E5E5E5] dark:border-[#242424]'>
+                  <CardContent className="py-3 border-t border-b border-[#E5E5E5] dark:border-[#242424]">
                     <div className="flex flex-wrap gap-2">
                       {project.tags.map(tag => (
                         <span

@@ -36,8 +36,8 @@ export const useThemeStore = create<ThemeState>()(
     }),
     {
       name: 'theme-storage',
-      partialize: (state) => ({ theme: state.theme }), // Only persist theme, not mounted state
-      onRehydrateStorage: () => (state) => {
+      partialize: state => ({ theme: state.theme }), // Only persist theme, not mounted state
+      onRehydrateStorage: () => state => {
         if (state && typeof window !== 'undefined') {
           // Apply theme after hydration
           setTimeout(() => {
@@ -52,14 +52,17 @@ export const useThemeStore = create<ThemeState>()(
 
 function applyTheme(theme: Theme) {
   if (typeof window === 'undefined') return;
-  
+
   const root = window.document.documentElement;
-  
+
   // Remove existing theme classes
   root.classList.remove('light', 'dark');
-  
+
   if (theme === 'system') {
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
+      .matches
+      ? 'dark'
+      : 'light';
     root.classList.add(systemTheme);
   } else {
     root.classList.add(theme);

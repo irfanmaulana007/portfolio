@@ -7,34 +7,45 @@ I'm **Irfan Maulana**, a passionate Frontend Developer based in DKI Jakarta, Ind
 ## 🚀 Skills
 
 ### Languages
+
 - JavaScript, TypeScript, HTML, CSS
 
 ### Frameworks & Libraries
+
 - React, Next.js, Vue.js
 - Tailwind CSS, Styled Components, Framer Motion
 - Shadcn UI, Ant Design
 
 ### Tools
+
 - Git, Webpack, Vite, Figma
 
 ## 🔥 Featured Projects
 
 ### H5 Games Platform
+
 A modern HTML5 gaming platform built with Next.js that offers a seamless gaming experience across devices.
+
 - [Demo](https://h5-games-platform.vercel.app/)
 - [Code](https://github.com/irfanmaulana007/h5-games-platform)
 
 ### Mahad Albilad
+
 A comprehensive website for an Islamic boarding school featuring course management, student registration, and more.
+
 - [Demo](https://mahad-albilad.or.id)
 - [Code](https://github.com/irfanmaulana007/mahad-albilad-v5)
 
 ### Noctua Platform
+
 A web-based platform for Noctua, featuring engaging gameplay mechanics, character customization, and social sharing capabilities.
+
 - [Demo](https://noctua.gg/)
 
 ### Sentra Games
+
 A comprehensive gaming portal platform that serves as a one-stop destination for gamers.
+
 - [Demo](https://sentra-games.vercel.app/)
 - [Code](https://github.com/irfanmaulana007/sentra-games)
 
@@ -72,6 +83,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ## 🔧 Technologies Used
 
 This portfolio is built with:
+
 - [Next.js](https://nextjs.org/) - React framework
 - [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
 - [Shadcn UI](https://ui.shadcn.com/) - UI component library
