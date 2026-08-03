@@ -1,91 +1,73 @@
-# Irfan Maulana - Frontend Developer Portfolio
+# Portfolio Monorepo
 
-## 👋 About Me
+A pnpm-workspaces monorepo containing three independently deployable services:
 
-I'm **Irfan Maulana**, a passionate Frontend Developer based in DKI Jakarta, Indonesia with 5+ years of experience crafting exceptional digital experiences. I specialize in building modern, responsive, and user-friendly web applications using cutting-edge technologies.
+| App | Path | Stack | Port (dev) |
+|---|---|---|---|
+| **Frontend** | `apps/frontend` | Next.js 15, React 19, Tailwind, Shadcn UI | 3000 |
+| **Backend** | `apps/backend` | Express, Prisma, PostgreSQL | 3001 |
+| **Admin** | `apps/admin` | Vite, React 19, React Router | 5173 |
+| Shared types | `packages/shared-types` | TypeScript DTOs | — |
 
-## 🚀 Skills
+The frontend renders the public portfolio and fetches projects from the backend
+API (falling back to a static list if the API is unavailable). The backend owns
+all dynamic content — projects and contact submissions — and exposes public +
+admin REST endpoints. The admin app is the owner-only UI for managing projects
+and reading contact submissions.
 
-### Languages
+See [`docs/`](./docs) for the PRD, architecture, data model, API spec,
+deployment (Dokploy), and migration plan.
 
-- JavaScript, TypeScript, HTML, CSS
+## Prerequisites
 
-### Frameworks & Libraries
+- Node.js >= 22
+- pnpm 10 (`corepack enable`)
+- PostgreSQL 16 (or `docker compose up -d postgres`)
 
-- React, Next.js, Vue.js
-- Tailwind CSS, Styled Components, Framer Motion
-- Shadcn UI, Ant Design
-
-### Tools
-
-- Git, Webpack, Vite, Figma
-
-## 🔥 Featured Projects
-
-### H5 Games Platform
-
-A modern HTML5 gaming platform built with Next.js that offers a seamless gaming experience across devices.
-
-- [Demo](https://h5-games-platform.vercel.app/)
-- [Code](https://github.com/irfanmaulana007/h5-games-platform)
-
-### Mahad Albilad
-
-A comprehensive website for an Islamic boarding school featuring course management, student registration, and more.
-
-- [Demo](https://mahad-albilad.or.id)
-- [Code](https://github.com/irfanmaulana007/mahad-albilad-v5)
-
-### Noctua Platform
-
-A web-based platform for Noctua, featuring engaging gameplay mechanics, character customization, and social sharing capabilities.
-
-- [Demo](https://noctua.gg/)
-
-### Sentra Games
-
-A comprehensive gaming portal platform that serves as a one-stop destination for gamers.
-
-- [Demo](https://sentra-games.vercel.app/)
-- [Code](https://github.com/irfanmaulana007/sentra-games)
-
-## 📫 Contact Me
-
-- **Email**: professional.irfanmaulana007@gmail.com
-- **Phone**: +62 851-5879-0074
-- **Location**: DKI Jakarta, Indonesia
-
-## 🔗 Connect With Me
-
-- [GitHub](https://github.com/irfanmaulana007)
-- [LinkedIn](https://linkedin.com/in/irfanmaulana007)
-- [Twitter](https://twitter.com/irfanmaulana007)
-- [Instagram](https://instagram.com/irfanmaulana007)
-
-## 🛠️ Running This Project
+## Getting started
 
 ```bash
-# Install dependencies
-npm install
+# 1. Install all workspace dependencies
+pnpm install
 
-# Run development server
-npm run dev
+# 2. Start Postgres (or use your own and set DATABASE_URL)
+docker compose up -d postgres
 
-# Build for production
-npm run build
+# 3. Configure backend env
+cp apps/backend/.env.example apps/backend/.env
+#   edit DATABASE_URL, JWT_SECRET, ADMIN_EMAIL, ADMIN_PASSWORD
 
-# Start production server
-npm start
+# 4. Apply migrations and seed (imports existing projects + admin user)
+pnpm --filter @portfolio/backend db:migrate:dev
+pnpm db:seed
+
+# 5. Run the services (separate terminals)
+pnpm dev:backend    # http://localhost:3001
+pnpm dev:frontend   # http://localhost:3000
+pnpm dev:admin      # http://localhost:5173
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Frontend and admin env:
 
-## 🔧 Technologies Used
+```bash
+cp apps/frontend/.env.example apps/frontend/.env.local
+cp apps/admin/.env.example apps/admin/.env
+```
 
-This portfolio is built with:
+## Common scripts (run from repo root)
 
-- [Next.js](https://nextjs.org/) - React framework
-- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
-- [Shadcn UI](https://ui.shadcn.com/) - UI component library
-- [Framer Motion](https://www.framer.com/motion/) - Animation library
-- [Vercel Analytics](https://vercel.com/analytics) - Performance tracking
+| Command | Description |
+|---|---|
+| `pnpm build` | Build all packages |
+| `pnpm build:backend` / `:frontend` / `:admin` | Build one app |
+| `pnpm dev:backend` / `:frontend` / `:admin` | Run one app in dev |
+| `pnpm db:migrate` | Apply migrations (`prisma migrate deploy`) |
+| `pnpm db:seed` | Seed admin user + projects |
+| `pnpm db:generate` | Regenerate Prisma client |
+| `pnpm format` | Prettier across the repo |
+
+## Deployment
+
+Each app has its own `Dockerfile` (build context = repo root) and deploys as a
+separate Dokploy application, backed by a Dokploy PostgreSQL service. Full setup
+in [docs/deployment.md](./docs/deployment.md).

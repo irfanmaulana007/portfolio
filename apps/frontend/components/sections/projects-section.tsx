@@ -9,7 +9,6 @@ import {
 } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { projects } from '@/lib/constants';
 import Image from 'next/image';
 import { PhotoSlider } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
@@ -24,7 +23,26 @@ export enum ProjectCategory {
   Game = 'game',
 }
 
-export function ProjectsSection() {
+/** Fields the project card needs. Satisfied by both the API DTO and the
+ *  static fallback list. */
+export interface ProjectCardData {
+  id: number;
+  title: string;
+  description: string;
+  image: string;
+  tags: string[];
+  demoUrl: string | null;
+  codeUrl: string | null;
+  previewImageUrl: string[];
+  category: string;
+  date: string;
+}
+
+export function ProjectsSection({
+  projects,
+}: {
+  projects: ProjectCardData[];
+}) {
   const [activeCategory, setActiveCategory] = useState<ProjectCategory>(
     ProjectCategory.All
   );
@@ -34,7 +52,7 @@ export function ProjectsSection() {
   });
   const tabsRef = useRef<HTMLButtonElement[]>([]);
 
-  const sortedProjectByNewest = projects.sort(
+  const sortedProjectByNewest = [...projects].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 

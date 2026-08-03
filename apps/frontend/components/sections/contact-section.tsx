@@ -10,6 +10,9 @@ import { personalInfo, socialLinks } from '@/lib/constants';
 import { Mail, MapPin, Phone } from 'lucide-react';
 import { Text } from '../ui/text';
 import { useState } from 'react';
+import { submitContact } from '@/lib/api';
+
+type SubmitState = 'idle' | 'sending' | 'success' | 'error';
 
 export function ContactSection() {
   const [form, setForm] = useState({
@@ -18,22 +21,34 @@ export function ContactSection() {
     subject: '',
     message: '',
   });
+  const [status, setStatus] = useState<SubmitState>('idle');
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
-  const handleSendMessage = () => {
-    const body = `Hi ${personalInfo.name},
-    
-${form.message}
+  const isValid =
+    form.name.trim() !== '' &&
+    form.email.trim() !== '' &&
+    form.subject.trim() !== '' &&
+    form.message.trim() !== '';
 
-Best regards,
-${form.name}`;
+  const handleSendMessage = async () => {
+    if (!isValid || status === 'sending') return;
+    setStatus('sending');
+    setErrorMessage('');
 
-    window.open(
-      `mailto:${personalInfo.email}?subject=${form.subject}&body=${body.replace(
-        /\n/g,
-        '%0A'
-      )}`,
-      '_blank'
-    );
+    const result = await submitContact({
+      name: form.name,
+      email: form.email,
+      subject: form.subject,
+      message: form.message,
+    });
+
+    if (result.ok) {
+      setStatus('success');
+      setForm({ name: '', email: '', subject: '', message: '' });
+    } else {
+      setStatus('error');
+      setErrorMessage(result.message ?? 'Failed to send message');
+    }
   };
 
   return (
@@ -105,9 +120,20 @@ ${form.name}`;
                     type="button"
                     className="w-full"
                     onClick={handleSendMessage}
+                    disabled={!isValid || status === 'sending'}
                   >
-                    Send Message
+                    {status === 'sending' ? 'Sending...' : 'Send Message'}
                   </Button>
+                  {status === 'success' && (
+                    <Text size="sm" className="text-green-600 dark:text-green-400">
+                      Thanks! Your message has been sent.
+                    </Text>
+                  )}
+                  {status === 'error' && (
+                    <Text size="sm" className="text-[#CA3142]">
+                      {errorMessage}
+                    </Text>
+                  )}
                 </form>
               </CardContent>
             </Card>

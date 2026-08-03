@@ -1,0 +1,40 @@
+# syntax=docker/dockerfile:1
+# Build context = repo root (so pnpm workspace deps resolve).
+# Dokploy: set "Docker Context Path" to the repo root and "Dockerfile Path"
+# to apps/backend/Dockerfile.
+
+FROM node:22-alpine AS base
+RUN apk add --no-cache libc6-compat openssl
+RUN corepack enable
+WORKDIR /repo
+
+# ---- Dependencies --------------------------------------------------------
+FROM base AS deps
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages/shared-types/package.json packages/shared-types/
+COPY apps/backend/package.json apps/backend/
+RUN pnpm install --frozen-lockfile --filter @portfolio/backend...
+
+# ---- Builder -------------------------------------------------------------
+FROM base AS builder
+COPY --from=deps /repo/node_modules ./node_modules
+COPY --from=deps /repo/apps/backend/node_modules ./apps/backend/node_modules
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages ./packages
+COPY apps/backend ./apps/backend
+RUN pnpm --filter @portfolio/backend build
+
+# ---- Runner --------------------------------------------------------------
+FROM base AS runner
+ENV NODE_ENV=production
+ENV PORT=3001
+COPY --from=builder /repo/node_modules ./node_modules
+COPY --from=builder /repo/apps/backend ./apps/backend
+COPY --from=builder /repo/packages ./packages
+COPY package.json pnpm-workspace.yaml ./
+
+WORKDIR /repo/apps/backend
+EXPOSE 3001
+
+# Apply migrations, then start. Seed is run as a one-off (see docs/deployment.md).
+CMD ["sh", "-c", "pnpm exec prisma migrate deploy && node dist/src/index.js"]
