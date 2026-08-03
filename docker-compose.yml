@@ -45,6 +45,9 @@ services:
     build:
       context: .
       dockerfile: apps/frontend/Dockerfile
+      args:
+        # Inlined into the browser bundle at build time.
+        NEXT_PUBLIC_API_BASE_URL: http://localhost:3001
     restart: unless-stopped
     depends_on:
       - backend
