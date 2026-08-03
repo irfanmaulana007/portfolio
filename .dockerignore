@@ -1,0 +1,15 @@
+node_modules
+.next
+.git
+.gitignore
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+README.md
+.env*
+.DS_Store
+coverage
+.vercel
+*.pem
+.claude
