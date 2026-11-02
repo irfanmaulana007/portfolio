@@ -1,0 +1,14 @@
+name: PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+
+jobs:
+  review:
+    uses: irfanmaulana007/ai-review/.github/workflows/claude-review.yml@main
+    secrets: inherit
+    # Opsional:
+    # with:
+    #   model: "opus"
+    #   extra_instructions: "Instruksi khusus repo ini"
