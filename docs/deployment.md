@@ -25,7 +25,7 @@ Four Dokploy resources, all in the same project/network:
 |---|---|---|
 | Frontend | `<domain>` (e.g. `irfanmaulana.dev`) | 3000 |
 | Backend | `api.<domain>` | 3001 |
-| Admin | `admin.<domain>` | 80 |
+| Admin | `admin.<domain>` | 8080 |
 
 ## Build arguments (compile-time — critical)
 
@@ -70,12 +70,81 @@ container port to **8080** for this app).
 
 > Secrets live only in Dokploy's env panel — never commit them.
 
+## Auto-deploy & per-service watch paths
+
+All three apps point at the **same repo and branch**, so by default a single push
+would rebuild **all three** — wasteful, since most commits touch only one app.
+Dokploy's **Watch Paths** filter fixes this: on each webhook push it compares the
+changed files against the app's patterns and **only deploys when something matches**.
+
+### 1. Enable auto-deploy (once per app)
+
+For `portfolio-backend`, `portfolio-frontend`, and `portfolio-admin`:
+
+1. Connect the Git provider (GitHub) and select the repo + production branch.
+2. Turn on **Auto Deploy**. Dokploy registers a webhook on the repo (one webhook
+   serves all three apps; the Watch Paths below decide which actually redeploy).
+
+### 2. Set Watch Paths (once per app)
+
+In each application's **Deployments → Watch Paths** (glob patterns, one per line):
+
+**`portfolio-backend`**
+```
+apps/backend/**
+packages/shared-types/**
+pnpm-lock.yaml
+pnpm-workspace.yaml
+package.json
+```
+
+**`portfolio-frontend`**
+```
+apps/frontend/**
+packages/shared-types/**
+pnpm-lock.yaml
+pnpm-workspace.yaml
+package.json
+```
+
+**`portfolio-admin`**
+```
+apps/admin/**
+packages/shared-types/**
+pnpm-lock.yaml
+pnpm-workspace.yaml
+package.json
+```
+
+### Why these paths
+
+- `apps/<svc>/**` — the service's own source. A change here rebuilds only that service.
+- `packages/shared-types/**` — the shared DTO package every app compiles in. A change
+  here **intentionally rebuilds all three** (they share the contract).
+- `pnpm-lock.yaml`, `pnpm-workspace.yaml`, root `package.json` — workspace/dependency
+  changes can affect any app's install, so they trigger all three (conservative and safe).
+- Anything else — `docs/**`, `.github/**`, `README.md`, the other apps' folders — does
+  **not** match, so that service stays untouched.
+
+> **Leave Watch Paths empty = every push redeploys that app.** That's the fallback if
+> the field isn't available in your Dokploy version — in that case, deploy manually
+> (app → **Deploy**) or split into separate branches per service.
+
+> The build context is still the repo root (so the lockfile/workspace resolve); Watch
+> Paths only decide **whether** to deploy, not **what** gets copied into the image.
+
+### Verify
+
+Push a change under `apps/admin/**` only → **just** `portfolio-admin` should deploy
+(check each app's **Deployments** tab). Push a change under `packages/shared-types/**`
+→ all three should deploy.
+
 ## Migrations & seed
 
 The backend container **runs migrations automatically on start** (from its Dockerfile
 `CMD`):
 ```
-pnpm exec prisma migrate deploy && node dist/src/index.js
+node_modules/.bin/prisma migrate deploy && node dist/src/index.js
 ```
 
 **Seed once** after the first successful deploy, to import the existing projects and the
@@ -135,3 +204,5 @@ matching Dokploy). `docker compose up --build`, then seed with
 - Each Dockerfile installs with `pnpm install --frozen-lockfile --filter <app>...` and
   builds only that app plus `packages/shared-types`.
 - Deploying one service does not require redeploying the others (independent apps).
+  Combined with the per-service **Watch Paths** above, a push only rebuilds the
+  app(s) whose files actually changed.
