@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
+import { Prisma } from '@prisma/client';
 
 export class AppError extends Error {
   status: number;
@@ -37,6 +38,20 @@ export const errorHandler = (
       error: { code: err.code, message: err.message, details: err.details },
     });
     return;
+  }
+
+  // Map common Prisma errors for expected client mistakes so they don't become 500s:
+  // P2002 = unique-constraint violation (e.g. a slug race), P2025 = record not found
+  // (e.g. reorder/update of a deleted id).
+  if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    if (err.code === 'P2002') {
+      res.status(409).json({ error: { code: 'conflict', message: 'Resource already exists' } });
+      return;
+    }
+    if (err.code === 'P2025') {
+      res.status(404).json({ error: { code: 'not_found', message: 'Resource not found' } });
+      return;
+    }
   }
 
   console.error('[error]', err);

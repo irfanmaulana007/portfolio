@@ -20,6 +20,8 @@ export function ContactSection() {
     email: '',
     subject: '',
     message: '',
+    // Spam honeypot — real users never see or fill this; bots do.
+    honeypot: '',
   });
   const [status, setStatus] = useState<SubmitState>('idle');
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -40,11 +42,12 @@ export function ContactSection() {
       email: form.email,
       subject: form.subject,
       message: form.message,
+      honeypot: form.honeypot,
     });
 
     if (result.ok) {
       setStatus('success');
-      setForm({ name: '', email: '', subject: '', message: '' });
+      setForm({ name: '', email: '', subject: '', message: '', honeypot: '' });
     } else {
       setStatus('error');
       setErrorMessage(result.message ?? 'Failed to send message');
@@ -68,6 +71,21 @@ export function ContactSection() {
                   Ready to bring your web ideas to life?
                 </Text>
                 <form className="space-y-4 mt-4">
+                  {/* Honeypot: hidden from users, catches bots. Not announced to AT. */}
+                  <div aria-hidden="true" className="hidden">
+                    <label htmlFor="company">Company</label>
+                    <input
+                      id="company"
+                      name="company"
+                      type="text"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={form.honeypot}
+                      onChange={e =>
+                        setForm({ ...form, honeypot: e.target.value })
+                      }
+                    />
+                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Name</Label>
@@ -125,13 +143,17 @@ export function ContactSection() {
                     {status === 'sending' ? 'Sending...' : 'Send Message'}
                   </Button>
                   {status === 'success' && (
-                    <Text size="sm" className="text-green-600 dark:text-green-400">
+                    <Text size="sm" variant="success">
                       Thanks! Your message has been sent.
                     </Text>
                   )}
                   {status === 'error' && (
-                    <Text size="sm" className="text-[#CA3142]">
-                      {errorMessage}
+                    <Text size="sm" variant="brand">
+                      {errorMessage} You can also email me directly at{' '}
+                      <a href={`mailto:${personalInfo.email}`} className="underline">
+                        {personalInfo.email}
+                      </a>
+                      .
                     </Text>
                   )}
                 </form>

@@ -4,9 +4,18 @@ import { AppError } from '../middleware/error';
 import { signToken } from '../middleware/auth';
 import { config } from '../lib/config';
 
+// A well-formed bcrypt hash of a value no password will match. Compared against
+// when the account doesn't exist so login takes ~the same time either way and
+// can't be used to enumerate which emails are admins.
+const DUMMY_HASH = '$2a$10$XT53zeGw1c.cQdSXaCOmeeckNdU6ct6b.8fze4PAgtoaoZOrbgl5a';
+
 export async function login(email: string, password: string) {
   const admin = await prisma.adminUser.findUnique({ where: { email } });
-  if (!admin) throw new AppError(401, 'invalid_credentials', 'Invalid email or password');
+  if (!admin) {
+    // Spend the same time as a real comparison, then fail identically.
+    await bcrypt.compare(password, DUMMY_HASH);
+    throw new AppError(401, 'invalid_credentials', 'Invalid email or password');
+  }
 
   const ok = await bcrypt.compare(password, admin.passwordHash);
   if (!ok) throw new AppError(401, 'invalid_credentials', 'Invalid email or password');

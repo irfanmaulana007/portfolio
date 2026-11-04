@@ -9,16 +9,14 @@ import { errorHandler, notFound } from './middleware/error';
 export function createApp() {
   const app = express();
 
-  // Behind Dokploy's reverse proxy — trust it so req.ip / rate limiting work.
-  app.set('trust proxy', 1);
+  // Behind a reverse proxy — trust the configured hop count so req.ip / rate
+  // limiting work (see TRUST_PROXY in config/docs).
+  app.set('trust proxy', config.trustProxy);
 
   app.use(helmet());
-  app.use(
-    cors({
-      origin: config.corsOrigins.length > 0 ? config.corsOrigins : true,
-      credentials: true,
-    })
-  );
+  // Only the configured origins are allowed — never reflect arbitrary origins.
+  // Auth is a bearer header (not cookies), so `credentials` is intentionally off.
+  app.use(cors({ origin: config.corsOrigins }));
   app.use(express.json({ limit: '1mb' }));
   app.use(morgan(isProd ? 'combined' : 'dev'));
 

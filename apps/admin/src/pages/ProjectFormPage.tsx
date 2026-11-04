@@ -140,8 +140,13 @@ export function ProjectFormPage() {
           />
         </div>
         <div className="field">
-          <label>Image URL *</label>
-          <input value={form.image} onChange={(e) => set('image', e.target.value)} required />
+          <label>Image path * (site-relative, e.g. /images/project/foo.webp)</label>
+          <input
+            value={form.image}
+            onChange={(e) => set('image', e.target.value)}
+            placeholder="/images/project/foo.webp"
+            required
+          />
         </div>
         <div className="field">
           <label>Tags (comma separated)</label>
@@ -185,9 +190,10 @@ export function ProjectFormPage() {
           </div>
         </div>
         <div className="field">
-          <label>Preview image URLs (one per line)</label>
+          <label>Preview image paths (site-relative, one per line)</label>
           <textarea
             rows={3}
+            placeholder="/images/project/foo-1.webp"
             value={form.previewImageUrl}
             onChange={(e) => set('previewImageUrl', e.target.value)}
           />

@@ -8,6 +8,7 @@ const textVariants = cva('text-foreground', {
       brand: 'text-[#CA3142] dark:text-[#CA3142]',
       primary: 'text-[#1A1A1A] dark:text-[#FFFFFF]',
       secondary: 'text-[#555555] dark:text-[#AAAAAA]',
+      success: 'text-[#16A34A] dark:text-[#4ADE80]',
     },
     size: {
       caption:

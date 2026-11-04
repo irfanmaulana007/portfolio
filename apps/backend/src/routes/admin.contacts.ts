@@ -1,7 +1,11 @@
 import { Router } from 'express';
 import type { ContactStatus } from '@prisma/client';
 import { asyncHandler, AppError } from '../middleware/error';
-import { contactStatusSchema, updateContactSchema } from '../lib/validation';
+import {
+  contactStatusSchema,
+  paginationQuerySchema,
+  updateContactSchema,
+} from '../lib/validation';
 import {
   getContactById,
   listContacts,
@@ -26,8 +30,10 @@ adminContactsRouter.get(
     const status =
       statusParsed && statusParsed.success ? (statusParsed.data as ContactStatus) : undefined;
 
-    const page = req.query.page ? Number(req.query.page) : undefined;
-    const pageSize = req.query.pageSize ? Number(req.query.pageSize) : undefined;
+    const { page, pageSize } = paginationQuerySchema.parse({
+      page: req.query.page,
+      pageSize: req.query.pageSize,
+    });
 
     const result = await listContacts({ status, page, pageSize });
     res.json({

@@ -18,7 +18,10 @@ declare global {
 }
 
 export function signToken(payload: AuthPayload): string {
-  return jwt.sign(payload, config.jwtSecret, { expiresIn: config.jwtExpiresInSeconds });
+  return jwt.sign(payload, config.jwtSecret, {
+    expiresIn: config.jwtExpiresInSeconds,
+    algorithm: 'HS256',
+  });
 }
 
 export function requireAuth(req: Request, _res: Response, next: NextFunction) {
@@ -28,7 +31,9 @@ export function requireAuth(req: Request, _res: Response, next: NextFunction) {
   }
   const token = header.slice('Bearer '.length);
   try {
-    const decoded = jwt.verify(token, config.jwtSecret) as unknown as AuthPayload;
+    const decoded = jwt.verify(token, config.jwtSecret, {
+      algorithms: ['HS256'],
+    }) as unknown as AuthPayload;
     req.admin = { sub: decoded.sub, email: decoded.email };
     next();
   } catch {
