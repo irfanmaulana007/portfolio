@@ -4,10 +4,16 @@ import { AppError } from '../middleware/error';
 import { signToken } from '../middleware/auth';
 import { config } from '../lib/config';
 
-// A well-formed bcrypt hash of a value no password will match. Compared against
-// when the account doesn't exist so login takes ~the same time either way and
-// can't be used to enumerate which emails are admins.
-const DUMMY_HASH = '$2a$10$XT53zeGw1c.cQdSXaCOmeeckNdU6ct6b.8fze4PAgtoaoZOrbgl5a';
+// bcrypt cost factor — must match the cost used when hashing real admin
+// passwords (see prisma/seed.ts) so the dummy comparison below takes the same
+// time as a real one.
+const BCRYPT_COST = 12;
+
+// A bcrypt hash of a value no real password will match, computed once at startup
+// (not stored as a literal in source). Compared against when the account doesn't
+// exist so login takes ~the same time either way and can't be used to enumerate
+// which emails are admins.
+const DUMMY_HASH = bcrypt.hashSync('no-account-placeholder', BCRYPT_COST);
 
 export async function login(email: string, password: string) {
   const admin = await prisma.adminUser.findUnique({ where: { email } });

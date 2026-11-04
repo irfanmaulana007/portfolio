@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import { PHASE_PRODUCTION_BUILD } from 'next/constants';
 import path from 'path';
 
 const nextConfig: NextConfig = {
@@ -12,4 +13,15 @@ const nextConfig: NextConfig = {
   transpilePackages: ['@portfolio/shared-types'],
 };
 
-export default nextConfig;
+export default (phase: string): NextConfig => {
+  // NEXT_PUBLIC_API_BASE_URL is inlined into the client bundle at build time;
+  // if it's missing the contact form silently points at localhost for every
+  // visitor. Fail the production build fast rather than ship that.
+  if (phase === PHASE_PRODUCTION_BUILD && !process.env.NEXT_PUBLIC_API_BASE_URL) {
+    throw new Error(
+      'NEXT_PUBLIC_API_BASE_URL must be set for a production build ' +
+        '(it is inlined into the browser bundle). Pass it as a build arg.'
+    );
+  }
+  return nextConfig;
+};

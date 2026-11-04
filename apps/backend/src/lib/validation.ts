@@ -6,9 +6,12 @@ export const projectCategorySchema = z.enum(['landing_page', 'dashboard', 'game'
 // next/image, which rejects hosts that aren't in `images.remotePatterns`. So an
 // image reference must be a site-relative path (`/images/...`), never an absolute
 // URL — otherwise the page (and the production build) breaks.
+// Must start with a single "/" — a protocol-relative "//host/x" is treated as a
+// remote URL by next/image and would break the render/build just like an
+// absolute URL, so the negative lookahead rejects a leading "//".
 const relativeImagePath = z
   .string()
-  .regex(/^\/[^\s]*$/, 'must be a site-relative path, e.g. /images/project/foo.webp');
+  .regex(/^\/(?!\/)[^\s]*$/, 'must be a site-relative path, e.g. /images/project/foo.webp');
 
 // Links are rendered as `<a href>` on the public site — restrict to http(s) so a
 // `javascript:`/`data:` URL can never become a stored script/phishing link.
