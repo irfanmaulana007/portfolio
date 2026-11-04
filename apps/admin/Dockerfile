@@ -30,8 +30,10 @@ COPY apps/admin ./apps/admin
 RUN pnpm --filter @portfolio/admin build
 
 # ---- Runner (static) -----------------------------------------------------
-FROM nginx:1.27-alpine AS runner
+# nginx-unprivileged runs as the non-root `nginx` user (uid 101) and listens on
+# 8080 by default (Sonar docker:S6471).
+FROM nginxinc/nginx-unprivileged:1.27-alpine AS runner
 COPY apps/admin/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /repo/apps/admin/dist /usr/share/nginx/html
-EXPOSE 80
+EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]

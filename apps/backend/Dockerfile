@@ -39,5 +39,12 @@ COPY package.json pnpm-workspace.yaml ./
 WORKDIR /repo/apps/backend
 EXPOSE 3001
 
-# Apply migrations, then start. Seed is run as a one-off (see docs/deployment.md).
-CMD ["sh", "-c", "pnpm exec prisma migrate deploy && node dist/src/index.js"]
+# Drop to the image's built-in non-root `node` user (Sonar docker:S6471). The app
+# only reads its (world-readable) files and writes nothing to the container FS.
+ENV HOME=/home/node
+USER node
+
+# Apply migrations, then start. Invoke the Prisma binary directly (no pnpm/corepack
+# at runtime, so no writable global store is needed as non-root). Seed is a one-off
+# (see docs/deployment.md).
+CMD ["sh", "-c", "node_modules/.bin/prisma migrate deploy && node dist/src/index.js"]

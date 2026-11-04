@@ -83,7 +83,7 @@ export function ContactsPage() {
                             className="btn btn-ghost"
                             onClick={(e) => {
                               e.stopPropagation();
-                              setStatus(c, 'read');
+                              void setStatus(c, 'read');
                             }}
                           >
                             Mark read
@@ -94,7 +94,7 @@ export function ContactsPage() {
                             className="btn btn-ghost"
                             onClick={(e) => {
                               e.stopPropagation();
-                              setStatus(c, 'archived');
+                              void setStatus(c, 'archived');
                             }}
                           >
                             Archive

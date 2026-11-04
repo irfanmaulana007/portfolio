@@ -65,7 +65,8 @@ NEXT_PUBLIC_API_BASE_URL=https://api.<domain>
 ```
 
 **Admin (`portfolio-admin`)** — no runtime env needed (static site; `VITE_API_BASE_URL`
-was baked in at build time). Served by nginx on port 80.
+was baked in at build time). Served by non-root nginx on port 8080 (set Dokploy's
+container port to **8080** for this app).
 
 > Secrets live only in Dokploy's env panel — never commit them.
 
