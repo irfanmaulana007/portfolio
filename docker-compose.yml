@@ -1,0 +1,81 @@
+# Local development compose — NOT for production.
+# The secrets below are throwaway dev defaults (NODE_ENV=development), so they are
+# safe to commit. For any internet-facing deployment, use the per-app Dockerfiles
+# as separate Dokploy applications with real secrets (see docs/deployment.md); the
+# backend refuses to start in production mode without a real JWT_SECRET/DATABASE_URL.
+# You can still override any secret here without editing this file, e.g.:
+#   JWT_SECRET=... ADMIN_PASSWORD=... docker compose up
+#
+# For just the database during local dev:
+#   docker compose up -d postgres
+# Then run apps with pnpm (dev:backend / dev:frontend / dev:admin).
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: portfolio
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/portfolio
+      JWT_SECRET: ${JWT_SECRET:-dev-insecure-secret-change-me}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change-me}
+      CORS_ORIGINS: http://localhost:3000,http://localhost:5173
+      PORT: '3001'
+      NODE_ENV: development
+    ports:
+      - '3001:3001'
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+      args:
+        # Inlined into the browser bundle at build time.
+        NEXT_PUBLIC_API_BASE_URL: http://localhost:3001
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      # Browser talks to the backend on the host-published port.
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:3001
+      # Server-side (container-to-container) fetch uses the internal name.
+      API_BASE_URL: http://backend:3001
+    ports:
+      - '3000:3000'
+
+  admin:
+    build:
+      context: .
+      dockerfile: apps/admin/Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:3001
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - '5173:8080'
+
+volumes:
+  postgres_data:

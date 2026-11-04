@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProjectCategory {
+  landing_page
+  dashboard
+  game
+}
+
+enum ContactStatus {
+  new
+  read
+  archived
+}
+
+model Project {
+  id              Int             @id @default(autoincrement())
+  title           String
+  slug            String          @unique
+  description     String
+  image           String
+  tags            String[]
+  demoUrl         String?
+  codeUrl         String?
+  date            DateTime
+  previewImageUrl String[]
+  category        ProjectCategory
+  featured        Boolean         @default(false)
+  published       Boolean         @default(true)
+  sortOrder       Int             @default(0)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([published, category])
+  @@index([sortOrder])
+}
+
+model ContactSubmission {
+  id        Int           @id @default(autoincrement())
+  name      String
+  email     String
+  subject   String
+  message   String
+  status    ContactStatus @default(new)
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime      @default(now())
+
+  @@index([status, createdAt])
+}
+
+model AdminUser {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
