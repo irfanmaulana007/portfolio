@@ -2,16 +2,37 @@
 
 > Companion to [PRD.md](./PRD.md). How the three services + DB run on Dokploy.
 
+> [!IMPORTANT]
+> **Set the build args before the first deploy, or the build fails.** The
+> frontend and admin inline the API URL **at build time**, so each needs a
+> **Build Arg** (not just a runtime env var) in Dokploy:
+>
+> | App                  | Build Arg                  | Example                |
+> | -------------------- | -------------------------- | ---------------------- |
+> | `portfolio-frontend` | `NEXT_PUBLIC_API_BASE_URL` | `https://api.<domain>` |
+> | `portfolio-admin`    | `VITE_API_BASE_URL`        | `https://api.<domain>` |
+>
+> The frontend build **hard-fails** without it:
+>
+> ```
+> Error: NEXT_PUBLIC_API_BASE_URL must be set for a production build
+> (it is inlined into the browser bundle). Pass it as a build arg.
+> ```
+>
+> Setting it only as a runtime env var is the #1 deploy mistake — it won't
+> satisfy the build. See [Build arguments](#build-arguments-compile-time--critical)
+> below for where to put it in Dokploy.
+
 ## Resources
 
 Four Dokploy resources, all in the same project/network:
 
-| Resource | Type | Dockerfile path | Build context |
-|---|---|---|---|
-| `portfolio-db` | PostgreSQL (Dokploy database) | — | — |
-| `portfolio-backend` | Application (this repo) | `apps/backend/Dockerfile` | **repo root (`.`)** |
-| `portfolio-frontend` | Application (this repo) | `apps/frontend/Dockerfile` | **repo root (`.`)** |
-| `portfolio-admin` | Application (this repo) | `apps/admin/Dockerfile` | **repo root (`.`)** |
+| Resource             | Type                          | Dockerfile path            | Build context       |
+| -------------------- | ----------------------------- | -------------------------- | ------------------- |
+| `portfolio-db`       | PostgreSQL (Dokploy database) | —                          | —                   |
+| `portfolio-backend`  | Application (this repo)       | `apps/backend/Dockerfile`  | **repo root (`.`)** |
+| `portfolio-frontend` | Application (this repo)       | `apps/frontend/Dockerfile` | **repo root (`.`)** |
+| `portfolio-admin`    | Application (this repo)       | `apps/admin/Dockerfile`    | **repo root (`.`)** |
 
 > **Build context must be the repo root**, not the app subfolder — the Dockerfiles
 > copy `pnpm-lock.yaml`, `pnpm-workspace.yaml`, and `packages/shared-types` so the pnpm
@@ -21,28 +42,44 @@ Four Dokploy resources, all in the same project/network:
 
 ## Domains
 
-| Service | Domain (example) | Container port |
-|---|---|---|
-| Frontend | `<domain>` (e.g. `irfanmaulana.dev`) | 3000 |
-| Backend | `api.<domain>` | 3001 |
-| Admin | `admin.<domain>` | 8080 |
+| Service  | Domain (example)                     | Container port |
+| -------- | ------------------------------------ | -------------- |
+| Frontend | `<domain>` (e.g. `irfanmaulana.dev`) | 3000           |
+| Backend  | `api.<domain>`                       | 3001           |
+| Admin    | `admin.<domain>`                     | 8080           |
 
 ## Build arguments (compile-time — critical)
 
 Two apps inline the API URL **at build time**, so these must be set as **Build Args**
 in Dokploy, not just runtime env:
 
-| App | Build Arg | Example |
-|---|---|---|
+| App                  | Build Arg                  | Example                |
+| -------------------- | -------------------------- | ---------------------- |
 | `portfolio-frontend` | `NEXT_PUBLIC_API_BASE_URL` | `https://api.<domain>` |
-| `portfolio-admin` | `VITE_API_BASE_URL` | `https://api.<domain>` |
+| `portfolio-admin`    | `VITE_API_BASE_URL`        | `https://api.<domain>` |
 
-> If you only set these as runtime env, the browser bundle falls back to
-> `http://localhost:3001` and the contact form / admin calls break in production.
+**Where in Dokploy:** open the application → **Environment** → the **Build-time
+Variables / Build Args** section (separate from the runtime Environment panel) →
+add the variable there → redeploy. Build args are only read during `docker build`,
+so a value in the runtime panel alone never reaches the build.
+
+**What happens if you miss it:**
+
+- **Frontend** — the build **hard-fails** (by design — see
+  [`apps/frontend/next.config.ts`](../apps/frontend/next.config.ts)) with:
+  ```
+  Error: NEXT_PUBLIC_API_BASE_URL must be set for a production build
+  (it is inlined into the browser bundle). Pass it as a build arg.
+  ```
+  This is a guardrail: it refuses to ship a bundle that would silently point every
+  visitor's browser at `http://localhost:3001`.
+- **Admin** — the build succeeds but the shipped bundle falls back to
+  `http://localhost:3001`, so admin API calls break in production.
 
 ## Environment variables (runtime)
 
 **Backend (`portfolio-backend`)**
+
 ```
 DATABASE_URL=postgresql://<user>:<pass>@portfolio-db:5432/portfolio
 JWT_SECRET=<random-long-secret>
@@ -55,6 +92,7 @@ NODE_ENV=production
 ```
 
 **Frontend (`portfolio-frontend`)**
+
 ```
 # Server-side (SSR/ISR) project fetch. Use the internal service URL if available,
 # else the public API domain.
@@ -90,6 +128,7 @@ For `portfolio-backend`, `portfolio-frontend`, and `portfolio-admin`:
 In each application's **Deployments → Watch Paths** (glob patterns, one per line):
 
 **`portfolio-backend`**
+
 ```
 apps/backend/**
 packages/shared-types/**
@@ -99,6 +138,7 @@ package.json
 ```
 
 **`portfolio-frontend`**
+
 ```
 apps/frontend/**
 packages/shared-types/**
@@ -108,6 +148,7 @@ package.json
 ```
 
 **`portfolio-admin`**
+
 ```
 apps/admin/**
 packages/shared-types/**
@@ -143,6 +184,7 @@ Push a change under `apps/admin/**` only → **just** `portfolio-admin` should d
 
 The backend container **runs migrations automatically on start** (from its Dockerfile
 `CMD`):
+
 ```
 node_modules/.bin/prisma migrate deploy && node dist/src/index.js
 ```
@@ -150,9 +192,11 @@ node_modules/.bin/prisma migrate deploy && node dist/src/index.js
 **Seed once** after the first successful deploy, to import the existing projects and the
 admin user. Run this as a one-off in the backend container (Dokploy → app → Terminal, or
 a scheduled/one-off command). From the app dir (`/repo/apps/backend`):
+
 ```
 pnpm db:seed
 ```
+
 It reads `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `DATABASE_URL` from the environment and is
 idempotent (upserts), so re-running is safe.
 
