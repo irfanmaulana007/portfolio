@@ -1,14 +1,433 @@
 name: PR Review
 
+# Self-contained Claude PR review (inlined from irfanmaulana007/ai-review).
+# Inlined because this repo is PUBLIC and that reusable-workflow host is PRIVATE —
+# a public repo cannot call a private repo's reusable workflow (the run fails at
+# startup). Keeping the logic here needs no cross-repo access.
+#
+# Output: ONE structured comment per PR (risk score 0-10, summary, "before merging",
+# findings per category, OWASP Top 10:2025 mapping).
+#   - First review  : the comment is created.
+#   - Next commits  : RE-REVIEW. The same comment is EDITed (no new comment).
+# Claude only writes .claude-review/review.json; rendering & posting is done by the
+# workflow, so the format stays consistent and the "edit, don't add" rule holds.
+
 on:
   pull_request:
     types: [opened, synchronize, ready_for_review]
 
 jobs:
   review:
-    uses: irfanmaulana007/ai-review/.github/workflows/claude-review.yml@main
-    secrets: inherit
-    # Opsional:
-    # with:
-    #   model: "opus"
-    #   extra_instructions: "Instruksi khusus repo ini"
+    # Skip draft PRs to save quota. Remove this line to also review drafts.
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+    concurrency:
+      group: claude-review-${{ github.repository }}-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_REF: ${{ github.event.pull_request.base.ref }}
+      OUT_DIR: .claude-review
+    steps:
+      - name: Checkout head PR
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Detect stack
+        id: stack
+        run: |
+          s=""
+          [ -n "$(find . -maxdepth 3 -name go.mod -not -path '*/node_modules/*' | head -1)" ] && s="$s Go"
+          mapfile -t pkgs < <(find . -maxdepth 3 -name package.json -not -path '*/node_modules/*')
+          if [ "${#pkgs[@]}" -gt 0 ]; then
+            grep -lq '"next"' "${pkgs[@]}" 2>/dev/null && s="$s Next.js"
+            grep -lq '"react"' "${pkgs[@]}" 2>/dev/null && s="$s React"
+            grep -lq '"@strapi/strapi"' "${pkgs[@]}" 2>/dev/null && s="$s Strapi"
+          fi
+          [ -f pnpm-workspace.yaml ] && s="$s pnpm-monorepo"
+          echo "stack=${s:-unknown}" >> "$GITHUB_OUTPUT"
+
+      - name: Load previous review state
+        id: state
+        run: |
+          mkdir -p "$OUT_DIR"
+          python3 - <<'PY'
+          import base64, json, os, re, subprocess
+
+          repo, pr = os.environ["REPO"], os.environ["PR_NUMBER"]
+          out = os.environ["OUT_DIR"]
+          BOT = "github-actions[bot]"
+
+          raw = subprocess.check_output(["gh", "api", "--paginate", "--slurp", f"repos/{repo}/issues/{pr}/comments"])
+          comments = [c for page in json.loads(raw) for c in page]
+          summary = None
+          for c in comments:
+              if c["user"]["login"] == BOT and "<!-- claude-review-summary" in c["body"]:
+                  summary = c
+
+          def git_ok(*args):
+              return subprocess.run(["git", *args], capture_output=True).returncode == 0
+
+          merge_base = subprocess.check_output(
+              ["git", "merge-base", f"origin/{os.environ['BASE_REF']}", "HEAD"], text=True).strip()
+          mode, base, note, review_no = "initial", merge_base, "", 1
+
+          if summary:
+              mode = "rereview"
+              body = summary["body"]
+              m = re.search(r"<!-- claude-review-summary sha=([0-9a-f]{40}) -->", body)
+              last = m.group(1) if m else ""
+              if last and git_ok("cat-file", "-e", f"{last}^{{commit}}") and git_ok("merge-base", "--is-ancestor", last, "HEAD"):
+                  base = last
+              else:
+                  note = ("NOTE: the last reviewed commit is no longer in the branch history "
+                          "(force-push/rebase), so the full PR diff is compared again.")
+              s = re.search(r"<!-- claude-review-state:([A-Za-z0-9+/=]+) -->", body)
+              prev = json.loads(base64.b64decode(s.group(1))) if s else {}
+              review_no = int(prev.get("review_no", 1)) + 1
+              json.dump(prev, open(f"{out}/previous-review.json", "w"), indent=2, ensure_ascii=False)
+
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"mode={mode}\nbase={base}\nmerge_base={merge_base}\nreview_no={review_no}\n")
+              f.write(f"summary_id={summary['id'] if summary else ''}\nnote={note}\n")
+          print(f"mode={mode} base={base[:7]} review_no={review_no}")
+          PY
+
+      - name: Skip if already reviewed
+        id: skip
+        env:
+          MODE: ${{ steps.state.outputs.mode }}
+          BASE: ${{ steps.state.outputs.base }}
+          WORKFLOW_REF: ${{ github.workflow_ref }}
+          WORKFLOW_SHA: ${{ github.workflow_sha }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          if [ "$MODE" = rereview ] && [ "$BASE" = "$HEAD_SHA" ]; then
+            echo "Commit $HEAD_SHA already reviewed, skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # claude-code-action refuses to run when the run's workflow file differs from
+          # the default branch — a guard against PRs that rewrite the workflow. Detect it
+          # up front so the job ends with a notice instead of failing on a missing review.json.
+          wf_path="${WORKFLOW_REF#*/}"; wf_path="${wf_path#*/}"; wf_path="${wf_path%@*}"
+          if ! git cat-file -e "$WORKFLOW_SHA^{commit}" 2>/dev/null; then
+            git fetch -q --depth=1 origin "$WORKFLOW_SHA" 2>/dev/null || true
+          fi
+          if ! git cat-file -e "$WORKFLOW_SHA^{commit}" 2>/dev/null; then
+            echo "::warning::Could not fetch workflow commit $WORKFLOW_SHA; not pre-checking workflow files."
+            exit 0
+          fi
+          paths=("$wf_path")
+          while IFS= read -r p; do
+            [ -n "$p" ] && paths+=("$p")
+          done < <(git show "$WORKFLOW_SHA:$wf_path" 2>/dev/null \
+                     | sed -nE 's/^[[:space:]]*(-[[:space:]]*)?uses:[[:space:]]*["'\'']?\.\/([^"'\''@[:space:]]+).*/\2/p')
+          for p in "${paths[@]}"; do
+            if ! git diff --quiet "origin/$DEFAULT_BRANCH" "$WORKFLOW_SHA" -- "$p"; then
+              echo "::notice title=Claude review skipped::This PR changes $p. claude-code-action only runs when the workflow files it runs match $DEFAULT_BRANCH, so this PR is not reviewed. PRs that don't touch them are reviewed normally."
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
+
+      - name: Claude review
+        if: steps.skip.outputs.skip != 'true'
+        uses: anthropics/claude-code-action@c0949c50a78c1ec8ce2647db36629b870e715d0c # v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: >-
+            --model opus
+            --max-turns 40
+            --allowedTools "Read,Grep,Glob,Write,Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(cat:*),Bash(ls:*)"
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR: #${{ github.event.pull_request.number }} — ${{ github.event.pull_request.title }}
+            DETECTED STACK: ${{ steps.stack.outputs.stack }}
+            MODE: ${{ steps.state.outputs.mode }}
+            HEAD (latest commit): ${{ github.event.pull_request.head.sha }}
+            MERGE BASE (start of PR): ${{ steps.state.outputs.merge_base }}
+            LAST REVIEWED COMMIT (rereview only): ${{ steps.state.outputs.base }}
+            ${{ steps.state.outputs.note }}
+
+            You are a senior staff engineer and application-security reviewer. You do NOT post comments
+            and do NOT modify repository files. Your only output is the file `.claude-review/review.json`.
+            The workflow renders it into the PR comment. Write all prose in English.
+
+            # What to review
+            Review the PR diff (`git diff <MERGE BASE>...HEAD`). Read surrounding code and callers as needed
+            to judge impact — a change can break code outside the diff. Follow CLAUDE.md and .claude/rules/
+            in the repo if present (treat violations as findings).
+
+            Check every area below:
+            - security — OWASP Top 10:2025 plus: secrets/credentials in code, SSRF, path traversal, unsafe
+              deserialization, mass assignment, IDOR, missing authz/branch/tenant scoping, CSRF/XSS, insecure
+              CORS, PII in logs, dependency risks.
+            - bug — defects that make the code wrong today (nil/undefined, wrong conditions, off-by-one, broken contracts).
+            - logic — business-logic/behavioural changes, contract changes affecting other callers, race/TOCTOU.
+            - reliability — error handling (swallowed/unwrapped errors), transactions & rollback, retries/timeouts,
+              resource leaks, concurrency, idempotency, graceful degradation.
+            - performance — N+1 queries, missing indexes, extra round-trips, unbounded loops/memory, re-renders, bundle size.
+            - clean_code — naming, duplication, dead code, magic values, overly long/complex functions, comments that lie.
+            - code_structure — layering violations, leaky abstractions, coupling, cohesion,
+              responsibility in the wrong layer.
+            - file_structure — files/modules in the wrong place, naming/placement inconsistent with the repo's conventions,
+              oversized files, misplaced tests.
+            - testing — missing/weak tests for new behaviour, edge cases, regression tests for fixes, flaky patterns.
+
+            Stack hints: React/Next.js — hook deps, server/client boundaries, no secrets in client bundle, list keys,
+            accessibility, responsive/theming regressions.
+
+            # Repo-specific context (reduce false positives)
+            This repo is a PUBLIC personal portfolio site: Next.js 15 (App Router) + React 19 + TypeScript + Tailwind +
+            shadcn/ui, deployed on Vercel. It has NO backend, NO database, and NO authenticated users. It also has NO
+            automated test suite (Vitest/Jest/Playwright are not set up) — the gates are `npm run lint` and `npm run build`.
+            Therefore: do NOT raise findings about missing server-side authz, SQL/parameterized queries, tenant scoping,
+            transactions, or "missing unit/e2e tests" as blockers — testing findings here should at most be `low`
+            suggestions. DO focus on correctness, React/Next pitfalls, accessibility, responsive/dark-mode regressions,
+            bundle size, dead code, and any secret accidentally shipped to the client bundle.
+
+            Do NOT invent findings. Do not comment on formatting a linter handles. One finding per distinct problem;
+            if the same root cause shows up in several areas, file it once under the most relevant category.
+
+            # Severity
+            - critical: exploitable security hole, data loss/corruption, or production outage likely.
+            - high: real bug or security weakness likely to hit users; must fix before merge.
+            - medium: correctness/reliability risk in edge cases, contract change, notable design problem.
+            - low: minor issue, clean-code/structure improvement, nit with real value.
+
+            # Risk score (0–10, one decimal) — likelihood × impact of merging AS-IS
+            0–1 trivial/safe · 2–3 low risk · 4–5 moderate (fixable issues, no blockers) · 6–7 high (should not merge
+            without fixes) · 8–9 severe (security hole / data integrity) · 10 do not merge.
+            Also score each area 0–10 the same way (0 = no concerns in that area).
+
+            # MODE=initial
+            Review the whole PR diff. All findings get "status": "new". IDs: F1, F2, ...
+
+            # MODE=rereview
+            New commits were pushed after the last review. Read `.claude-review/previous-review.json` (the previous
+            review, including all findings with their IDs). Inspect `git log <LAST REVIEWED COMMIT>..HEAD` and
+            `git diff <LAST REVIEWED COMMIT>..HEAD`, and read the current files at HEAD.
+            1. Include EVERY previous finding again with the SAME id, and set "status":
+               "resolved" (fixed), "partial" (partly fixed), or "open" (unchanged). Add "status_note" explaining
+               what changed (mention the commit when useful). Keep resolved ones resolved unless the problem returns.
+            2. Look for NEW problems introduced by the new commits only; give them "status": "new" and continue
+               the ID sequence (e.g. last was F6 → start at F7).
+            3. Re-score risk_score and scores for the code at HEAD (resolved findings no longer count).
+            4. Fill "changes_since_last_review" with 1–3 sentences on what the new commits did.
+
+            # Output — write valid JSON to `.claude-review/review.json` exactly in this shape
+            {
+              "summary": "3-5 sentences: what the PR does, whether it is correct, the main risks.",
+              "risk_score": 4.0,
+              "risk_rationale": "one sentence explaining the score",
+              "scores": {"security": 0, "bug": 0, "logic": 0, "reliability": 0, "performance": 0,
+                         "clean_code": 0, "code_structure": 0, "file_structure": 0, "testing": 0},
+              "before_merging": ["concrete action 1", "concrete action 2"],
+              "findings": [{
+                "id": "F1",
+                "category": "security|bug|logic|reliability|performance|clean_code|code_structure|file_structure|testing",
+                "severity": "critical|high|medium|low",
+                "title": "short title",
+                "location": "path/to/file.tsx:123 or path/to/file.tsx:ComponentName",
+                "description": "what is wrong and why it matters (markdown, use `code` for identifiers)",
+                "suggestion": "concrete fix",
+                "owasp": "A01:2025 – Broken Access Control",
+                "status": "new|open|partial|resolved",
+                "status_note": ""
+              }],
+              "owasp": [{"id": "A06:2025 – Insecure Design", "note": "how this PR relates to the category"}],
+              "changes_since_last_review": ""
+            }
+            - "owasp" on a finding: only for security-relevant findings, otherwise null.
+            - top-level "owasp": only categories actually touched by this PR; [] if none.
+            - "before_merging": ordered, actionable steps for open critical/high/medium findings; [] if nothing blocks.
+            - OWASP Top 10:2025 ids: A01 Broken Access Control · A02 Security Misconfiguration ·
+              A03 Software Supply Chain Failures · A04 Cryptographic Failures · A05 Injection · A06 Insecure Design ·
+              A07 Authentication Failures · A08 Software or Data Integrity Failures ·
+              A09 Security Logging & Alerting Failures · A10 Mishandling of Exceptional Conditions.
+
+      - name: Publish review
+        if: steps.skip.outputs.skip != 'true'
+        env:
+          MODE: ${{ steps.state.outputs.mode }}
+          SUMMARY_ID: ${{ steps.state.outputs.summary_id }}
+          REVIEW_NO: ${{ steps.state.outputs.review_no }}
+          MODEL: opus
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          python3 - <<'PY'
+          import base64, json, os, subprocess
+
+          E = os.environ
+          repo, pr, head, out = E["REPO"], E["PR_NUMBER"], E["HEAD_SHA"], E["OUT_DIR"]
+          rereview = E["MODE"] == "rereview"
+
+          try:
+              r = json.load(open(f"{out}/review.json"))
+          except Exception as e:
+              raise SystemExit(f"::error::Claude did not produce a valid review.json: {e}")
+          prev = json.load(open(f"{out}/previous-review.json")) if rereview and os.path.exists(f"{out}/previous-review.json") else {}
+
+          SEV_ORDER = ["critical", "high", "medium", "low"]
+          SEV_ICON = {"critical": "🔴", "high": "🔴", "medium": "🟠", "low": "🟡"}
+          SEV_FLOOR = {"critical": 8.5, "high": 6.5, "medium": 4.0, "low": 1.5}
+          CATS = [  # key, title, count label
+              ("security", "🔒 Security", "security"), ("bug", "🐞 Bugs", "bug"),
+              ("logic", "🧠 Logic", "logic"), ("reliability", "🛟 Reliability", "reliability"),
+              ("performance", "⚡ Performance", "performance"), ("clean_code", "🧹 Clean Code", "clean code"),
+              ("code_structure", "🏗️ Code Structure", "code structure"),
+              ("file_structure", "📁 File Structure", "file structure"), ("testing", "🧪 Testing", "testing"),
+          ]
+          AREA_LABEL = {k: t.split(" ", 1)[1] for k, t, _ in CATS}
+
+          findings = r.get("findings") or []
+          for f in findings:
+              f["severity"] = f.get("severity") if f.get("severity") in SEV_ORDER else "low"
+              f["category"] = f.get("category") if f.get("category") in AREA_LABEL else "bug"
+              f["status"] = f.get("status") or "new"
+          active = [f for f in findings if f["status"] != "resolved"]
+          resolved = [f for f in findings if f["status"] == "resolved"]
+
+          # Overall risk = max(model score, severity floor of still-open findings), clamped 0-10
+          def clamp(x):
+              try: return max(0.0, min(10.0, float(x)))
+              except Exception: return 0.0
+          floor = 0.0
+          if active:
+              worst = min(active, key=lambda f: SEV_ORDER.index(f["severity"]))["severity"]
+              serious = sum(1 for f in active if f["severity"] in ("critical", "high", "medium"))
+              floor = SEV_FLOOR[worst] + min(1.0, 0.25 * max(0, serious - 1))
+          risk = round(max(clamp(r.get("risk_score")), floor), 1)
+          r["risk_score"] = risk
+          head_icon = "🟢" if risk < 5 else "🟡" if risk < 7 else "🟠" if risk < 8.5 else "🔴"
+
+          trend = ""
+          if rereview and "risk_score" in prev:
+              p = float(prev["risk_score"])
+              arrow = "⬇️" if risk < p else "⬆️" if risk > p else "➡️"
+              trend = f" ({arrow} was {p:.1f})"
+
+          L = []
+          L.append(f"## {head_icon} Claude Review — risk **{risk:.1f}/10**{trend}")
+          L.append("")
+          verb = "re-reviewed after new commits" if rereview else "automated code review below"
+          L.append(f"@{E['PR_AUTHOR']} — {verb}. Please review before merging (this is **not** an approval).")
+          L.append("")
+          if rereview and r.get("changes_since_last_review"):
+              L.append(f"**Since last review.** {r['changes_since_last_review']}")
+              L.append("")
+          L.append(f"**Summary.** {r.get('summary', '').strip()}")
+          if r.get("risk_rationale"):
+              L.append("")
+              L.append(f"_Risk rationale: {r['risk_rationale'].strip()}_")
+          L.append("")
+
+          counts = [f"**{sum(1 for f in active if f['category']==k)}** {lbl}" for k, _, lbl in CATS
+                    if any(f["category"] == k for f in active)]
+          status_bits = []
+          if rereview:
+              status_bits = [f"✅ **{len(resolved)}** resolved",
+                             f"⚠️ **{sum(1 for f in active if f['status']=='partial')}** partial",
+                             f"🆕 **{sum(1 for f in active if f['status']=='new')}** new"]
+          L.append(" · ".join(counts) if counts else "✨ No open findings.")
+          if status_bits:
+              L.append("")
+              L.append(" · ".join(status_bits))
+          L.append("")
+
+          bm = [s for s in (r.get("before_merging") or []) if s]
+          if bm:
+              L.append("> **Before merging:** " + " ".join(f"{i}. {s}" for i, s in enumerate(bm, 1)))
+              L.append("")
+
+          scores = r.get("scores") or {}
+          if scores:
+              L.append("<details><summary>📊 Risk by area</summary>")
+              L.append("")
+              L.append("| Area | Risk |")
+              L.append("|---|---|")
+              for k, _, _ in CATS:
+                  if k in scores:
+                      v = clamp(scores[k])
+                      bar = "█" * int(round(v)) + "░" * (10 - int(round(v)))
+                      L.append(f"| {AREA_LABEL[k]} | `{bar}` {v:.1f} |")
+              L.append("")
+              L.append("</details>")
+              L.append("")
+
+          STATUS_TAG = {"new": "🆕 new" if rereview else "", "open": "still open", "partial": "⚠️ partially fixed"}
+          def render(f):
+              tag = STATUS_TAG.get(f["status"], "")
+              tag = f" · _{tag}_" if tag else ""
+              owasp = f" · _{f['owasp']}_" if f.get("owasp") else ""
+              s = (f"- {SEV_ICON[f['severity']]} **{f['severity']}** · `{f.get('id','')}` **{f.get('title','')}**"
+                   f" — `{f.get('location','')}`{owasp}{tag}<br>{f.get('description','')}")
+              if f.get("suggestion"):
+                  s += f"<br>💡 {f['suggestion']}"
+              if f.get("status_note") and f["status"] != "new":
+                  s += f"<br>🔁 {f['status_note']}"
+              return s
+
+          for k, title, _ in CATS:
+              items = sorted([f for f in active if f["category"] == k], key=lambda f: SEV_ORDER.index(f["severity"]))
+              if not items:
+                  continue
+              L.append(f"### {title} ({len(items)})")
+              L.append("")
+              L += [render(f) for f in items]
+              L.append("")
+
+          if resolved:
+              L.append(f"### ✅ Resolved since last review ({len(resolved)})")
+              L.append("")
+              for f in resolved:
+                  note = f" — {f['status_note']}" if f.get("status_note") else ""
+                  L.append(f"- ~~`{f.get('id','')}` {f.get('title','')}~~{note}")
+              L.append("")
+
+          ow = r.get("owasp") or []
+          if ow:
+              L.append("### 🛡️ OWASP Top 10:2025")
+              L.append("")
+              L += [f"- **{o.get('id','')}** — {o.get('note','')}" for o in ow]
+              L.append("")
+
+          kind = "re-review" if rereview else "review"
+          L.append("---")
+          L.append(f"<sub>🤖 Claude Review · {E['MODEL']} · {kind} #{E['REVIEW_NO']} · commit `{head[:7]}` · [run log]({E['RUN_URL']})</sub>")
+
+          # Hidden state for the next re-review
+          r["review_no"] = int(E["REVIEW_NO"])
+          state = base64.b64encode(json.dumps(r, ensure_ascii=False).encode()).decode()
+          body = f"<!-- claude-review-summary sha={head} -->\n" + "\n".join(L)
+          if len(body) + len(state) > 64000:  # GitHub comment limit is 65536 chars
+              slim = {**r, "findings": [{k: f.get(k) for k in ("id", "category", "severity", "title", "location", "status")} for f in findings]}
+              state = base64.b64encode(json.dumps(slim, ensure_ascii=False).encode()).decode()
+          marker = f"\n<!-- claude-review-state:{state} -->"
+          limit = 65000 - len(marker)
+          if len(body) > limit:  # truncate visible text, never the state marker
+              body = body[:limit - 100] + "\n\n_…truncated (comment size limit)._"
+          body += marker
+
+          if E["SUMMARY_ID"]:
+              cmd = ["gh", "api", "-X", "PATCH", f"repos/{repo}/issues/comments/{E['SUMMARY_ID']}", "--input", "-"]
+          else:
+              cmd = ["gh", "api", "-X", "POST", f"repos/{repo}/issues/{pr}/comments", "--input", "-"]
+          res = subprocess.run(cmd, input=json.dumps({"body": body}), text=True, capture_output=True)
+          if res.returncode != 0:
+              raise SystemExit(f"::error::Failed to publish review: {res.stderr or res.stdout}")
+          print(f"{'Edited' if E['SUMMARY_ID'] else 'Posted'} review comment — risk {risk}/10, {len(active)} open, {len(resolved)} resolved")
+          PY
