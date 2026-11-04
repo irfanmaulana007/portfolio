@@ -13,7 +13,9 @@ FROM base AS deps
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/shared-types/package.json packages/shared-types/
 COPY apps/frontend/package.json apps/frontend/
-RUN pnpm install --frozen-lockfile --filter @portfolio/frontend...
+# --ignore-scripts blocks dependency lifecycle scripts at install time (Sonar
+# docker:S6505). The Next.js build needs no install-time scripts.
+RUN pnpm install --frozen-lockfile --ignore-scripts --filter @portfolio/frontend...
 
 # ---- Builder -------------------------------------------------------------
 FROM base AS builder

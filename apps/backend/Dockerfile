@@ -13,7 +13,10 @@ FROM base AS deps
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/shared-types/package.json packages/shared-types/
 COPY apps/backend/package.json apps/backend/
-RUN pnpm install --frozen-lockfile --filter @portfolio/backend...
+# --ignore-scripts blocks dependency lifecycle scripts at install time (Sonar
+# docker:S6505). The Prisma client is generated explicitly in the build stage
+# (`prisma generate` in the backend build script), so nothing here needs them.
+RUN pnpm install --frozen-lockfile --ignore-scripts --filter @portfolio/backend...
 
 # ---- Builder -------------------------------------------------------------
 FROM base AS builder

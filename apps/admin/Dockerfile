@@ -14,7 +14,9 @@ FROM base AS deps
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/shared-types/package.json packages/shared-types/
 COPY apps/admin/package.json apps/admin/
-RUN pnpm install --frozen-lockfile --filter @portfolio/admin...
+# --ignore-scripts blocks dependency lifecycle scripts at install time (Sonar
+# docker:S6505). The Vite build needs no install-time scripts.
+RUN pnpm install --frozen-lockfile --ignore-scripts --filter @portfolio/admin...
 
 # ---- Builder -------------------------------------------------------------
 FROM base AS builder
