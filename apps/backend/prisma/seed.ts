@@ -141,7 +141,7 @@ const seedProjects = [
     title: 'Hiji 2 Tilu',
     description:
       'A training and retreat ground website — "Grounded in Nature, Growing in Unity." Built with Next.js and a Strapi CMS backend, with content-managed pages, nature-focused visuals, and smooth animated browsing.',
-    image: '/images/project/placeholder.webp',
+    image: '/images/project/hiji-2-tilu.webp',
     tags: [
       'Next.js',
       'TypeScript',
@@ -160,7 +160,7 @@ const seedProjects = [
     title: 'Gym Assistant',
     description:
       'A personal training companion for organizing workouts and tracking progressive overload. Group training into workout days, add exercises with target sets and reps, log the weight lifted each session, and watch your strength trend over time.',
-    image: '/images/project/placeholder.webp',
+    image: '/images/project/gym-assistant.webp',
     tags: ['React', 'Vite', 'TypeScript', 'Go', 'PostgreSQL'],
     demoUrl: '',
     codeUrl: 'https://github.com/irfanmaulana007/gym-assistant',
@@ -173,7 +173,7 @@ const seedProjects = [
     title: 'Simagis',
     description:
       'A management information system dashboard for day-to-day operations — searchable data tables, barcode generation, Excel import/export, and interactive charts, with authenticated role-based access and reporting.',
-    image: '/images/project/placeholder.webp',
+    image: '/images/project/simagis.webp',
     tags: [
       'React',
       'Vite',
@@ -190,10 +190,10 @@ const seedProjects = [
     featured: true,
   },
   {
-    title: 'BGN Head Office Support System',
+    title: 'Head Office Support System (HRIS)',
     description:
-      'An enterprise HRIS and head-office support platform for Badan Gizi Nasional (BGN). Covers employee management, biometric attendance and check-in/out with single sign-on, document workflows, and operational dashboards — a Next.js web app backed by a Go API, PostgreSQL, and Kafka-based data sync.',
-    image: '/images/project/placeholder.webp',
+      'An enterprise HRIS and head-office support platform for a large government agency. Covers employee management, biometric attendance and check-in/out with single sign-on, document workflows, and operational dashboards — a Next.js web app backed by a Go API, PostgreSQL, and Kafka-based data sync.',
+    image: '/images/project/hris-system.webp',
     tags: [
       'Next.js',
       'TypeScript',

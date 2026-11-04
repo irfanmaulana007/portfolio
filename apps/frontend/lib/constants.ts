@@ -180,7 +180,7 @@ export const projects = [
       'Framer Motion',
       'Strapi CMS',
     ],
-    image: '/images/project/placeholder.webp',
+    image: '/images/project/hiji-2-tilu.webp',
     demoUrl: '',
     codeUrl: '',
     date: '2025-09-25',
@@ -194,7 +194,7 @@ export const projects = [
     description:
       'A personal training companion for organizing workouts and tracking progressive overload. Group training into workout days, add exercises with target sets and reps, log the weight lifted each session, and watch your strength trend over time.',
     tags: ['React', 'Vite', 'TypeScript', 'Go', 'PostgreSQL'],
-    image: '/images/project/placeholder.webp',
+    image: '/images/project/gym-assistant.webp',
     demoUrl: '',
     codeUrl: 'https://github.com/irfanmaulana007/gym-assistant',
     date: '2026-09-09',
@@ -215,7 +215,7 @@ export const projects = [
       'Tailwind CSS',
       'Recharts',
     ],
-    image: '/images/project/placeholder.webp',
+    image: '/images/project/simagis.webp',
     demoUrl: '',
     codeUrl: '',
     date: '2026-02-05',
@@ -225,9 +225,9 @@ export const projects = [
   },
   {
     id: 12,
-    title: 'BGN Head Office Support System',
+    title: 'Head Office Support System (HRIS)',
     description:
-      'An enterprise HRIS and head-office support platform for Badan Gizi Nasional (BGN). Covers employee management, biometric attendance and check-in/out with single sign-on, document workflows, and operational dashboards — a Next.js web app backed by a Go API, PostgreSQL, and Kafka-based data sync.',
+      'An enterprise HRIS and head-office support platform for a large government agency. Covers employee management, biometric attendance and check-in/out with single sign-on, document workflows, and operational dashboards — a Next.js web app backed by a Go API, PostgreSQL, and Kafka-based data sync.',
     tags: [
       'Next.js',
       'TypeScript',
@@ -236,7 +236,7 @@ export const projects = [
       'Go',
       'PostgreSQL',
     ],
-    image: '/images/project/placeholder.webp',
+    image: '/images/project/hris-system.webp',
     demoUrl: '',
     codeUrl: '',
     date: '2025-03-12',
