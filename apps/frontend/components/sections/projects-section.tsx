@@ -38,11 +38,7 @@ export interface ProjectCardData {
   date: string;
 }
 
-export function ProjectsSection({
-  projects,
-}: {
-  projects: ProjectCardData[];
-}) {
+export function ProjectsSection({ projects }: { projects: ProjectCardData[] }) {
   const [activeCategory, setActiveCategory] = useState<ProjectCategory>(
     ProjectCategory.All
   );
@@ -187,9 +183,9 @@ export function ProjectsSection({
                               Live Demo
                             </Button>
                           </Link>
-                        ) : (
+                        ) : project.previewImageUrl.length > 0 ? (
                           <PreviewImages images={project.previewImageUrl} />
-                        )}
+                        ) : null}
                       </div>
 
                       {project.codeUrl && (
