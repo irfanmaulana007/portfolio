@@ -35,7 +35,7 @@ const seedProjects = [
     tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI'],
     demoUrl: 'https://mahad-albilad.or.id',
     // Client project — source is private, so the Source Code button is hidden
-    // (falsy codeUrl). Real URL: https://github.com/irfanmaulana007/mahad-albilad-v5
+    // (falsy codeUrl).
     codeUrl: '',
     date: '2024-01-01',
     previewImageUrl: [],
@@ -166,7 +166,6 @@ const seedProjects = [
     tags: ['React', 'Vite', 'TypeScript', 'Go', 'PostgreSQL'],
     demoUrl: '',
     // Source Code button hidden (falsy codeUrl) — preview only.
-    // Real URL: https://github.com/irfanmaulana007/gym-assistant
     codeUrl: '',
     date: '2026-09-09',
     previewImageUrl: ['/images/project/gym-assistant.webp'],
