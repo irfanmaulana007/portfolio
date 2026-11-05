@@ -211,95 +211,12 @@ const seedProjects = [
   },
 ];
 
-// Snapshot of the personal info / social links / nav items previously
-// hardcoded in apps/frontend/lib/constants.ts, and the skills previously
-// hardcoded inline in apps/frontend/components/sections/skills-section.tsx.
-// Kept verbatim so no content is lost on cutover to the API.
-const siteProfile = {
-  name: 'Irfan Maulana',
-  role: 'Frontend Developer',
-  bio: 'A passionate frontend developer with expertise in building modern web applications using React, Next.js, and Tailwind CSS.',
-  phone: '+62 851-5879-0074',
-  email: 'professional.irfanmaulana007@gmail.com',
-  location: 'DKI Jakarta, Indonesia',
-  developerSince: '2018',
-};
-
-const socialLinks = [
-  { platform: 'github', url: 'https://github.com/irfanmaulana007', label: 'GitHub' },
-  { platform: 'linkedin', url: 'https://linkedin.com/in/irfanmaulana007', label: 'LinkedIn' },
-  { platform: 'twitter', url: 'https://twitter.com/irfanmaulana007', label: 'Twitter' },
-  { platform: 'instagram', url: 'https://instagram.com/irfanmaulana007', label: 'Instagram' },
-];
-
-const navItems = [
-  { name: 'Home', href: '#home' },
-  { name: 'About', href: '#about' },
-  { name: 'Projects', href: '#projects' },
-  { name: 'Skills', href: '#skills' },
-];
-
-const skills = [
-  { name: 'HTML5', level: 95 },
-  { name: 'CSS3/SCSS', level: 90 },
-  { name: 'JavaScript (ES6+)', level: 90 },
-  { name: 'TypeScript', level: 85 },
-  { name: 'React.js', level: 90 },
-  { name: 'Next.js', level: 85 },
-  { name: 'Tailwind CSS', level: 90 },
-  { name: 'Framer Motion', level: 75 },
-  { name: 'Git/GitHub', level: 85 },
-  { name: 'Figma', level: 80 },
-  { name: 'Responsive Design', level: 95 },
-  { name: 'Performance Optimization', level: 90 },
-  { name: 'Accessibility (a11y)', level: 85 },
-  { name: 'SEO Basics', level: 75 },
-  { name: 'Testing (Jest, RTL)', level: 70 },
-  { name: 'CI/CD', level: 65 },
-];
-
-// Create-only, like seedProjectsData: the DB is the source of truth once
-// seeded, so re-running must never clobber rows edited directly in the DB.
-// Production gets this same content automatically via the data migration in
-// migrations/20261105000000_add_site_content (keep the two in sync).
-async function seedProfileData() {
-  await prisma.siteProfile.upsert({
-    where: { id: 1 },
-    update: {},
-    create: { id: 1, ...siteProfile },
-  });
-
-  for (let i = 0; i < socialLinks.length; i++) {
-    const s = socialLinks[i];
-    await prisma.socialLink.upsert({
-      where: { platform: s.platform },
-      update: {},
-      create: { ...s, sortOrder: i },
-    });
-  }
-
-  for (let i = 0; i < navItems.length; i++) {
-    const n = navItems[i];
-    await prisma.navItem.upsert({
-      where: { href: n.href },
-      update: {},
-      create: { ...n, sortOrder: i },
-    });
-  }
-
-  for (let i = 0; i < skills.length; i++) {
-    const sk = skills[i];
-    await prisma.skill.upsert({
-      where: { name: sk.name },
-      update: {},
-      create: { ...sk, sortOrder: i },
-    });
-  }
-
-  console.log(
-    `[seed] profile ready: 1 profile, ${socialLinks.length} social links, ${navItems.length} nav items, ${skills.length} skills`
-  );
-}
+// NOTE: Site content (SiteProfile / SocialLink / NavItem / Skill) is NOT seeded
+// here. It is inserted once by the data migration
+// migrations/20261105000000_add_site_content (INSERT ... ON CONFLICT DO NOTHING),
+// which runs automatically on `prisma migrate deploy`. Keeping it there (a single
+// source of truth) avoids duplicating the snapshot in two places and guarantees
+// the content lands on deploy without running this seed.
 
 async function seedAdmin() {
   const email = process.env.ADMIN_EMAIL;
@@ -358,7 +275,6 @@ async function seedProjectsData() {
 
 async function main() {
   await seedAdmin();
-  await seedProfileData();
   await seedProjectsData();
 }
 

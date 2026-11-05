@@ -8,14 +8,87 @@ import { Textarea } from '@/components/ui/textarea';
 import { motion } from 'framer-motion';
 import type {
   PersonalInfoDTO,
+  SocialLinkDTO,
   SocialLinksDTO,
 } from '@portfolio/shared-types';
 import { Mail, MapPin, Phone } from 'lucide-react';
 import { Text } from '../ui/text';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { submitContact } from '@/lib/api';
 
 type SubmitState = 'idle' | 'sending' | 'success' | 'error';
+
+// Platform display order + icons. URLs/labels come from the API; only these
+// glyphs are presentational. A platform renders only if the API returns it.
+const SOCIAL_ORDER = ['github', 'linkedin', 'twitter', 'instagram'];
+
+const SOCIAL_ICONS: Record<string, ReactNode> = {
+  github: (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+      <path d="M9 18c-4.51 2-5-2-7-2" />
+    </svg>
+  ),
+  linkedin: (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+      <rect width="4" height="12" x="2" y="9" />
+      <circle cx="4" cy="4" r="2" />
+    </svg>
+  ),
+  twitter: (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
+    </svg>
+  ),
+  instagram: (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+    </svg>
+  ),
+};
 
 export function ContactSection({
   personalInfo,
@@ -40,6 +113,20 @@ export function ContactSection({
     form.email.trim() !== '' &&
     form.subject.trim() !== '' &&
     form.message.trim() !== '';
+
+  // Only render cards/links whose data the API actually returned, so an
+  // unavailable profile degrades to fewer blocks rather than empty text.
+  const contactDetails = (
+    [
+      { Icon: MapPin, label: 'Location', value: personalInfo?.location, breakAll: false },
+      { Icon: Mail, label: 'Email', value: personalInfo?.email, breakAll: true },
+      { Icon: Phone, label: 'Phone', value: personalInfo?.phone, breakAll: false },
+    ] as const
+  ).filter((d) => Boolean(d.value));
+
+  const socials = SOCIAL_ORDER.map((key) => ({ key, link: socialLinks[key] })).filter(
+    (s): s is { key: string; link: SocialLinkDTO } => Boolean(s.link?.url)
+  );
 
   const handleSendMessage = async () => {
     if (!isValid || status === 'sending') return;
@@ -158,14 +245,20 @@ export function ContactSection({
                   )}
                   {status === 'error' && (
                     <Text size="sm" variant="brand">
-                      {errorMessage} You can also email me directly at{' '}
-                      <a
-                        href={`mailto:${personalInfo?.email ?? ''}`}
-                        className="underline"
-                      >
-                        {personalInfo?.email}
-                      </a>
-                      .
+                      {errorMessage}
+                      {personalInfo?.email && (
+                        <>
+                          {' '}
+                          You can also email me directly at{' '}
+                          <a
+                            href={`mailto:${personalInfo.email}`}
+                            className="underline"
+                          >
+                            {personalInfo.email}
+                          </a>
+                          .
+                        </>
+                      )}
                     </Text>
                   )}
                 </form>
@@ -177,145 +270,45 @@ export function ContactSection({
                 <Text size="heading-5" weight="light">
                   Let&apos;s work together
                 </Text>
-                <div className="space-y-4 mt-4">
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 bg-[#F5F5F5] dark:bg-[#242424] rounded-sm">
-                      <MapPin className="w-5 h-5 text-[#CA3142]" />
-                    </div>
-                    <div>
-                      <Text size="caption" variant="secondary">
-                        Location
-                      </Text>
-                      <Text size="md">{personalInfo?.location}</Text>
-                    </div>
+                {contactDetails.length > 0 && (
+                  <div className="space-y-4 mt-4">
+                    {contactDetails.map(({ Icon, label, value, breakAll }) => (
+                      <div key={label} className="flex items-start gap-3">
+                        <div className="p-2 bg-[#F5F5F5] dark:bg-[#242424] rounded-sm">
+                          <Icon className="w-5 h-5 text-[#CA3142]" />
+                        </div>
+                        <div className={breakAll ? 'break-all' : undefined}>
+                          <Text size="caption" variant="secondary">
+                            {label}
+                          </Text>
+                          <Text size="md">{value}</Text>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 bg-[#F5F5F5] dark:bg-[#242424] rounded-sm">
-                      <Mail className="w-5 h-5 text-[#CA3142]" />
-                    </div>
-                    <div className="break-all">
-                      <Text size="caption" variant="secondary">
-                        Email
-                      </Text>
-                      <Text size="md">{personalInfo?.email}</Text>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 bg-[#F5F5F5] dark:bg-[#242424] rounded-sm">
-                      <Phone className="w-5 h-5 text-[#CA3142]" />
-                    </div>
-                    <div>
-                      <Text size="caption" variant="secondary">
-                        Phone
-                      </Text>
-                      <Text size="md">{personalInfo?.phone}</Text>
-                    </div>
-                  </div>
-                </div>
+                )}
 
-                <div className="mt-8">
-                  <Text size="heading-5" weight="light">
-                    Connect with me
-                  </Text>
-                  <div className="flex gap-4 mt-4 text-[#CA3142]">
-                    <a
-                      href={socialLinks.github?.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2 bg-[#F5F5F5] dark:bg-[#242424] rounded-sm hover:bg-[#CA3142]/10 transition-colors"
-                      aria-label={socialLinks.github?.label ?? 'GitHub'}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
-                        <path d="M9 18c-4.51 2-5-2-7-2" />
-                      </svg>
-                    </a>
-                    <a
-                      href={socialLinks.linkedin?.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2 bg-[#F5F5F5] dark:bg-[#242424] rounded-sm hover:bg-[#CA3142]/10 transition-colors"
-                      aria-label={socialLinks.linkedin?.label ?? 'LinkedIn'}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-                        <rect width="4" height="12" x="2" y="9" />
-                        <circle cx="4" cy="4" r="2" />
-                      </svg>
-                    </a>
-                    <a
-                      href={socialLinks.twitter?.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2 bg-[#F5F5F5] dark:bg-[#242424] rounded-sm hover:bg-[#CA3142]/10 transition-colors"
-                      aria-label={socialLinks.twitter?.label ?? 'Twitter'}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
-                      </svg>
-                    </a>
-                    <a
-                      href={socialLinks.instagram?.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2 bg-[#F5F5F5] dark:bg-[#242424] rounded-sm hover:bg-[#CA3142]/10 transition-colors"
-                      aria-label={socialLinks.instagram?.label ?? 'Instagram'}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <rect
-                          width="20"
-                          height="20"
-                          x="2"
-                          y="2"
-                          rx="5"
-                          ry="5"
-                        />
-                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                        <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-                      </svg>
-                    </a>
+                {socials.length > 0 && (
+                  <div className="mt-8">
+                    <Text size="heading-5" weight="light">
+                      Connect with me
+                    </Text>
+                    <div className="flex gap-4 mt-4 text-[#CA3142]">
+                      {socials.map(({ key, link }) => (
+                        <a
+                          key={key}
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-2 bg-[#F5F5F5] dark:bg-[#242424] rounded-sm hover:bg-[#CA3142]/10 transition-colors"
+                          aria-label={link.label}
+                        >
+                          {SOCIAL_ICONS[key]}
+                        </a>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </CardContent>
             </Card>
           </div>

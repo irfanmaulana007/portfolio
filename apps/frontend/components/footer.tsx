@@ -11,12 +11,9 @@ interface FooterProps {
 
 export function Footer({ name, socialLinks }: FooterProps) {
   const currentYear = new Date().getFullYear();
-  const footerLinks = [
-    { key: 'github', label: 'GitHub' },
-    { key: 'linkedin', label: 'LinkedIn' },
-    { key: 'twitter', label: 'Twitter' },
-    { key: 'instagram', label: 'Instagram' },
-  ];
+  // Driven by the API: render whatever social links the backend returns, in
+  // the order it returns them.
+  const links = Object.entries(socialLinks).filter(([, link]) => link?.url);
 
   return (
     <footer className="bg-[#F0F0F0] dark:bg-[#181818] relative py-8">
@@ -30,21 +27,17 @@ export function Footer({ name, socialLinks }: FooterProps) {
           </div>
           <div className="flex flex-col items-center md:items-end">
             <div className="flex gap-6 mb-4">
-              {footerLinks.map(({ key, label }) => {
-                const link = socialLinks[key];
-                if (!link) return null;
-                return (
-                  <Link
-                    key={key}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    <Text size="md">{link.label || label}</Text>
-                  </Link>
-                );
-              })}
+              {links.map(([key, link]) => (
+                <Link
+                  key={key}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Text size="md">{link.label}</Text>
+                </Link>
+              ))}
             </div>
             <Text size="caption" variant="secondary">
               © {currentYear} {name}. All rights reserved.
