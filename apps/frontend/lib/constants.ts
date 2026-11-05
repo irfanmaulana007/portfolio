@@ -58,7 +58,9 @@ export const projects = [
     image: '/images/project/mahad-albilad.webp',
     tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI'],
     demoUrl: 'https://mahad-albilad.or.id',
-    codeUrl: 'https://github.com/irfanmaulana007/mahad-albilad-v5',
+    // Client project — source code is private, so the Source Code button is hidden.
+    // codeUrl: 'https://github.com/irfanmaulana007/mahad-albilad-v5',
+    codeUrl: '',
     date: '2024-01-01',
     previewImageUrl: [],
     category: ProjectCategory.LandingPage,
