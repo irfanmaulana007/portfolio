@@ -141,14 +141,27 @@ export function ProjectsSection({ projects }: { projects: ProjectCardData[] }) {
                 viewport={{ once: true }}
               >
                 <Card className="h-full flex flex-col overflow-hidden border border-[#E5E5E5] dark:border-[#242424] bg-[#FAFAFA] dark:bg-[#181818] transition-all duration-300 hover:shadow-md">
-                  <div className="py-8 px-2 bg-[#F0F0F0] dark:bg-[#242424]">
+                  <div className="relative aspect-video overflow-hidden bg-[#F0F0F0] dark:bg-[#242424]">
+                    {/* Blurred backdrop fills the sides when the preview is
+                        not landscape (e.g. mobile/portrait screenshots). */}
+                    <Image
+                      src={project.image}
+                      alt=""
+                      aria-hidden
+                      fill
+                      quality={20}
+                      sizes="(max-width: 768px) 100vw, 25vw"
+                      className="object-cover scale-110 blur-2xl opacity-50"
+                    />
+                    {/* Foreground: the whole image, contained within the
+                        landscape box (letterboxed/pillarboxed, never cropped). */}
                     <Image
                       src={project.image}
                       alt={project.title}
-                      height={300}
-                      width={600}
+                      fill
                       quality={100}
-                      className="object-cover object-top"
+                      sizes="(max-width: 768px) 100vw, 25vw"
+                      className="object-contain object-center"
                     />
                   </div>
                   <CardHeader className="py-3">

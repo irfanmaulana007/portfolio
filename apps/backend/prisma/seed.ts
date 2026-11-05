@@ -34,7 +34,9 @@ const seedProjects = [
     image: '/images/project/mahad-albilad.webp',
     tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI'],
     demoUrl: 'https://mahad-albilad.or.id',
-    codeUrl: 'https://github.com/irfanmaulana007/mahad-albilad-v5',
+    // Client project — source is private, so the Source Code button is hidden
+    // (falsy codeUrl). Real URL: https://github.com/irfanmaulana007/mahad-albilad-v5
+    codeUrl: '',
     date: '2024-01-01',
     previewImageUrl: [],
     category: ProjectCategory.landing_page,
@@ -163,7 +165,9 @@ const seedProjects = [
     image: '/images/project/gym-assistant.webp',
     tags: ['React', 'Vite', 'TypeScript', 'Go', 'PostgreSQL'],
     demoUrl: '',
-    codeUrl: 'https://github.com/irfanmaulana007/gym-assistant',
+    // Source Code button hidden (falsy codeUrl) — preview only.
+    // Real URL: https://github.com/irfanmaulana007/gym-assistant
+    codeUrl: '',
     date: '2026-09-09',
     previewImageUrl: ['/images/project/gym-assistant.webp'],
     category: ProjectCategory.dashboard,
