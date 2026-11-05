@@ -61,3 +61,47 @@ model AdminUser {
   passwordHash String
   createdAt    DateTime @default(now())
 }
+
+// Singleton row (id = 1) holding the site owner's personal information.
+model SiteProfile {
+  id             Int      @id @default(1)
+  name           String
+  role           String
+  bio            String
+  phone          String
+  email          String
+  location       String
+  developerSince String
+  updatedAt      DateTime @updatedAt
+}
+
+model SocialLink {
+  id        Int      @id @default(autoincrement())
+  platform  String   @unique
+  url       String
+  label     String
+  sortOrder Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@index([sortOrder])
+}
+
+model NavItem {
+  id        Int      @id @default(autoincrement())
+  name      String
+  href      String   @unique
+  sortOrder Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@index([sortOrder])
+}
+
+model Skill {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  level     Int
+  sortOrder Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@index([sortOrder])
+}

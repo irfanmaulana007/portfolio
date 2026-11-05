@@ -211,6 +211,13 @@ const seedProjects = [
   },
 ];
 
+// NOTE: Site content (SiteProfile / SocialLink / NavItem / Skill) is NOT seeded
+// here. It is inserted once by the data migration
+// migrations/20261105000000_add_site_content (INSERT ... ON CONFLICT DO NOTHING),
+// which runs automatically on `prisma migrate deploy`. Keeping it there (a single
+// source of truth) avoids duplicating the snapshot in two places and guarantees
+// the content lands on deploy without running this seed.
+
 async function seedAdmin() {
   const email = process.env.ADMIN_EMAIL;
   const password = process.env.ADMIN_PASSWORD;
@@ -221,9 +228,12 @@ async function seedAdmin() {
     return;
   }
   const passwordHash = await bcrypt.hash(password, 12);
+  // Create-only: re-running the seed (e.g. to restore content) must NOT reset
+  // the password of an existing admin. Rotate passwords deliberately, not as a
+  // seed side effect.
   await prisma.adminUser.upsert({
     where: { email },
-    update: { passwordHash },
+    update: {},
     create: { email, passwordHash },
   });
   console.log(`[seed] admin user ready: ${email}`);

@@ -189,16 +189,27 @@ The backend container **runs migrations automatically on start** (from its Docke
 node_modules/.bin/prisma migrate deploy && node dist/src/index.js
 ```
 
-**Seed once** after the first successful deploy, to import the existing projects and the
-admin user. Run this as a one-off in the backend container (Dokploy → app → Terminal, or
-a scheduled/one-off command). From the app dir (`/repo/apps/backend`):
+**Site content (personal info, social links, nav items, skills) is seeded
+automatically** by the `20261105000000_add_site_content` data migration
+(`INSERT ... ON CONFLICT DO NOTHING`), which runs as part of `migrate deploy`
+above. No manual step is needed for the public site to render content on a fresh
+or existing deployment.
+
+**Seed once** after the first successful deploy to create the admin user and
+import the project rows. Run this as a one-off in the backend container
+(Dokploy → app → Terminal, or a scheduled/one-off command). From the app dir
+(`/repo/apps/backend`):
 
 ```
 pnpm db:seed
 ```
 
-It reads `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `DATABASE_URL` from the environment and is
-idempotent (upserts), so re-running is safe.
+It reads `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `DATABASE_URL` from the
+environment. Every step is **create-only / idempotent**: re-running is safe and
+will **not** overwrite content edited directly in the DB, and will **not** reset
+an existing admin's password. Re-run it whenever `seed.ts` gains new projects
+(e.g. to backfill projects added after the initial seed) — it inserts only the
+missing slugs.
 
 ## Health checks
 

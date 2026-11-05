@@ -1,5 +1,6 @@
 import type {
   ProjectDTO,
+  ProfileDTO,
   CreateContactInput,
 } from '@portfolio/shared-types';
 
@@ -12,8 +13,8 @@ const API_BASE_URL =
 
 /**
  * Fetch published projects from the backend (server-side, revalidated).
- * On any failure returns `null` so the caller can fall back to static data
- * and the public site never breaks when the API is briefly unavailable.
+ * On any failure returns `null`; the caller renders an empty projects list
+ * (there is no static fallback — the API/DB is the single source of truth).
  */
 export async function fetchProjects(): Promise<ProjectDTO[] | null> {
   try {
@@ -23,6 +24,24 @@ export async function fetchProjects(): Promise<ProjectDTO[] | null> {
     });
     if (!res.ok) return null;
     return (await res.json()) as ProjectDTO[];
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Fetch site content (personal info, social links, nav items, skills) from the
+ * backend (server-side, revalidated). Returns `null` on any failure so callers
+ * can degrade gracefully instead of crashing the render.
+ */
+export async function fetchProfile(): Promise<ProfileDTO | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/profile`, {
+      // ISR: cache and revalidate every 60s.
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as ProfileDTO;
   } catch {
     return null;
   }

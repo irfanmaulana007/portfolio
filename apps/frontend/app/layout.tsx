@@ -7,6 +7,7 @@ import './globals.css';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import Image from 'next/image';
+import { fetchProfile } from '@/lib/api';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: '--font-plus-jakarta-sans',
@@ -21,18 +22,23 @@ export const metadata: Metadata = {
     'A minimalist portfolio showcasing frontend engineering skills and projects',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const profile = await fetchProfile();
+
   return (
     <html lang="en" className="scroll-smooth">
       <body
         className={`${plusJakartaSans.variable} min-h-screen bg-[#FAFAFA] dark:bg-[#121212] antialiased`}
       >
         <ThemeProvider>
-          <Header />
+          <Header
+            name={profile?.personalInfo.name ?? ''}
+            navItems={profile?.navItems ?? []}
+          />
           <main className="relative">
             <div className="fixed inset-0">
               <Image
@@ -44,7 +50,10 @@ export default function RootLayout({
             </div>
             {children}
           </main>
-          <Footer />
+          <Footer
+            name={profile?.personalInfo.name ?? ''}
+            socialLinks={profile?.socialLinks ?? {}}
+          />
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />

@@ -3,14 +3,21 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { motion } from 'framer-motion';
-import { personalInfo } from '@/lib/constants';
+import type { PersonalInfoDTO } from '@portfolio/shared-types';
 import { differenceInYears } from 'date-fns';
 import { Text } from '../ui/text';
 import { Calendar, Mail, MapPin, Phone } from 'lucide-react';
 import { useTheme } from '@/lib/hooks/use-theme';
 
-export function AboutSection() {
+export function AboutSection({
+  personalInfo,
+}: {
+  personalInfo: PersonalInfoDTO | null;
+}) {
   const { isDark } = useTheme();
+  const yearsOfExperience = personalInfo?.developerSince
+    ? differenceInYears(new Date(), new Date(personalInfo.developerSince))
+    : 0;
 
   return (
     <section
@@ -35,7 +42,7 @@ export function AboutSection() {
             <div className="grid md:grid-cols-4 grid-cols-1 gap-4">
               <div className="col-span-1 relative z-10">
                 <Text size="display-1" weight="extrabold">
-                  {personalInfo.name}
+                  {personalInfo?.name}
                 </Text>
               </div>
               <div className="col-span-1 flex items-center justify-center">
@@ -74,27 +81,25 @@ export function AboutSection() {
                     <CardContent className="h-full p-4 flex md:flex-col flex-row items-center md:items-start gap-2">
                       <MapPin className="w-5 h-5 text-[#555555] dark:text-[#AAAAAA] flex-shrink-0" />
                       <Text size="sm" variant="secondary">
-                        {personalInfo.location}
+                        {personalInfo?.location}
                       </Text>
                     </CardContent>
                   </Card>
-                  <Card>
-                    <CardContent className="h-full p-4 flex md:flex-col flex-row items-center md:items-start gap-2">
-                      <Calendar className="w-5 h-5 text-[#555555] dark:text-[#AAAAAA] flex-shrink-0" />
-                      <Text size="sm" variant="secondary">
-                        {differenceInYears(
-                          new Date(),
-                          new Date(personalInfo.be_developer_since)
-                        )}
-                        + Years
-                      </Text>
-                    </CardContent>
-                  </Card>
+                  {yearsOfExperience > 0 && (
+                    <Card>
+                      <CardContent className="h-full p-4 flex md:flex-col flex-row items-center md:items-start gap-2">
+                        <Calendar className="w-5 h-5 text-[#555555] dark:text-[#AAAAAA] flex-shrink-0" />
+                        <Text size="sm" variant="secondary">
+                          {yearsOfExperience}+ Years
+                        </Text>
+                      </CardContent>
+                    </Card>
+                  )}
                   <Card>
                     <CardContent className="h-full p-4 flex md:flex-col flex-row items-center md:items-start gap-2">
                       <Phone className="w-5 h-5 text-[#555555] dark:text-[#AAAAAA] flex-shrink-0" />
                       <Text size="sm" variant="secondary">
-                        {personalInfo.phone}
+                        {personalInfo?.phone}
                       </Text>
                     </CardContent>
                   </Card>
@@ -102,7 +107,7 @@ export function AboutSection() {
                     <CardContent className="h-full p-4 flex md:flex-col flex-row items-center md:items-start gap-2">
                       <Mail className="w-5 h-5 text-[#555555] dark:text-[#AAAAAA] flex-shrink-0" />
                       <Text size="sm" variant="secondary">
-                        {personalInfo.email}
+                        {personalInfo?.email}
                       </Text>
                     </CardContent>
                   </Card>

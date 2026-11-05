@@ -6,9 +6,20 @@ Guidance for Claude Code (and humans) working in this repository.
 
 **Irfan Maulana — Frontend Developer Portfolio.** A single-page personal
 portfolio site: hero, about, projects, skills, and contact sections, with a
-light/dark theme toggle. Content is static (no backend, no database, no auth) —
-project/skills data lives in [`lib/constants.ts`](lib/constants.ts). Deployed on
-Vercel (`@vercel/analytics` + `@vercel/speed-insights`).
+light/dark theme toggle.
+
+**Content comes from the backend API (database), not a constants file.** The
+public site data — projects (`GET /api/projects`) and site content such as
+personal info, social links, nav items, and skills (`GET /api/profile`) — is
+fetched server-side from the backend, which reads it from PostgreSQL via Prisma.
+There is no longer a `lib/constants.ts`. The database is the source of truth, so
+**to change site content, edit the DB rows** (admin app / SQL) — the seed and the
+`add_site_content` data migration only provide the *initial* values and are
+create-only (re-running `pnpm --filter @portfolio/backend db:seed` inserts
+missing rows, e.g. newly added projects, but never overwrites existing ones).
+The frontend is deployed on Vercel
+(`@vercel/analytics` + `@vercel/speed-insights`); the backend/DB are deployed
+separately (see [`docs/deployment.md`](docs/deployment.md)).
 
 ## Stack
 
@@ -47,8 +58,10 @@ clean and the change confirmed in the running app in a browser.
   fork a near-duplicate.
 - [`components/`](components/) — shared chrome: `header`, `footer`,
   `theme-provider`.
-- [`lib/`](lib/) — `constants.ts` (site content/data), `utils.ts` (`cn` helper),
-  `theme-store.ts` (Zustand), `hooks/`.
+- [`lib/`](lib/) — `api.ts` (backend fetchers: `fetchProjects`,
+  `fetchProfile`, `submitContact`), `utils.ts` (`cn` helper),
+  `theme-store.ts` (Zustand), `hooks/`. Site content/data is no longer stored
+  here — it comes from the API (see above).
 - Path alias: `@/` → repo root (e.g. `@/components/ui/button`).
 
 ## Working rules (see [`.claude/rules/`](.claude/rules/))

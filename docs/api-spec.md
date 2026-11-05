@@ -24,6 +24,11 @@ List published projects.
 ### `GET /api/projects/:slug`
 - 200: `Project` · 404 if not found or unpublished.
 
+### `GET /api/profile`
+Site content for the public page (personal info, social links, nav items, skills).
+- 200: `Profile` — `{ personalInfo: PersonalInfo, socialLinks: Record<platform, { url, label }>, navItems: NavItem[], skills: Skill[] }`.
+- 404 if the site profile row is missing (DB not seeded / migrated).
+
 ### `POST /api/contact`
 Create a contact submission. Rate-limited + validated + spam-guarded.
 - Body: `{ "name": string, "email": string, "subject": string, "message": string, "honeypot"?: string }`
