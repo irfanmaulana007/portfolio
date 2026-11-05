@@ -76,6 +76,45 @@ model AdminUser {
   passwordHash String
   createdAt    DateTime @default(now())
 }
+
+// Site content (formerly apps/frontend/lib/constants.ts + the skills-section
+// inline list), now served to the public frontend via GET /api/profile.
+model SiteProfile {        // singleton, id = 1
+  id             Int      @id @default(1)
+  name           String
+  role           String
+  bio            String
+  phone          String
+  email          String
+  location       String
+  developerSince String   // e.g. "2018"
+  updatedAt      DateTime @updatedAt
+}
+
+model SocialLink {
+  id        Int      @id @default(autoincrement())
+  platform  String   @unique   // e.g. "github"
+  url       String
+  label     String
+  sortOrder Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+model NavItem {
+  id        Int      @id @default(autoincrement())
+  name      String
+  href      String   @unique   // e.g. "#about"
+  sortOrder Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+model Skill {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  level     Int                 // 0–100 proficiency
+  sortOrder Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
 ```
 
 ## Field mapping — current `projects[]` → `Project`
@@ -99,7 +138,17 @@ model AdminUser {
 
 ## Seeding
 
-`apps/backend/prisma/seed.ts`:
-1. Upsert the single `AdminUser` from `ADMIN_EMAIL` / `ADMIN_PASSWORD` (hashed).
-2. Insert all projects copied from the current `lib/constants.ts` `projects[]`, applying
-   the mapping above.
+`apps/backend/prisma/seed.ts` — all steps are **create-only** (idempotent; never
+overwrite rows edited directly in the DB, and never reset an existing admin's
+password):
+1. Create the single `AdminUser` from `ADMIN_EMAIL` / `ADMIN_PASSWORD` (hashed),
+   only if it does not already exist.
+2. Create the `SiteProfile` / `SocialLink` / `NavItem` / `Skill` content, only if
+   absent.
+3. Create all projects (the mapping above), only if the slug is absent.
+
+The `SiteProfile`/`SocialLink`/`NavItem`/`Skill` content is **also** inserted by
+the data migration `migrations/20261105000000_add_site_content`
+(`INSERT ... ON CONFLICT DO NOTHING`), so an existing deployment gets it
+automatically on `prisma migrate deploy` without running the seed. Keep the
+migration's values in sync with `seed.ts`.

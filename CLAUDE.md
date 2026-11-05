@@ -12,9 +12,12 @@ light/dark theme toggle.
 public site data — projects (`GET /api/projects`) and site content such as
 personal info, social links, nav items, and skills (`GET /api/profile`) — is
 fetched server-side from the backend, which reads it from PostgreSQL via Prisma.
-There is no longer a `lib/constants.ts`; to change site content, update the
-database (re-run the backend seed `pnpm --filter @portfolio/backend db:seed`, or
-edit the rows directly). The frontend is deployed on Vercel
+There is no longer a `lib/constants.ts`. The database is the source of truth, so
+**to change site content, edit the DB rows** (admin app / SQL) — the seed and the
+`add_site_content` data migration only provide the *initial* values and are
+create-only (re-running `pnpm --filter @portfolio/backend db:seed` inserts
+missing rows, e.g. newly added projects, but never overwrites existing ones).
+The frontend is deployed on Vercel
 (`@vercel/analytics` + `@vercel/speed-insights`); the backend/DB are deployed
 separately (see [`docs/deployment.md`](docs/deployment.md)).
 

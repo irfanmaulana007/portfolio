@@ -85,14 +85,16 @@ export function AboutSection({
                       </Text>
                     </CardContent>
                   </Card>
-                  <Card>
-                    <CardContent className="h-full p-4 flex md:flex-col flex-row items-center md:items-start gap-2">
-                      <Calendar className="w-5 h-5 text-[#555555] dark:text-[#AAAAAA] flex-shrink-0" />
-                      <Text size="sm" variant="secondary">
-                        {yearsOfExperience}+ Years
-                      </Text>
-                    </CardContent>
-                  </Card>
+                  {yearsOfExperience > 0 && (
+                    <Card>
+                      <CardContent className="h-full p-4 flex md:flex-col flex-row items-center md:items-start gap-2">
+                        <Calendar className="w-5 h-5 text-[#555555] dark:text-[#AAAAAA] flex-shrink-0" />
+                        <Text size="sm" variant="secondary">
+                          {yearsOfExperience}+ Years
+                        </Text>
+                      </CardContent>
+                    </Card>
+                  )}
                   <Card>
                     <CardContent className="h-full p-4 flex md:flex-col flex-row items-center md:items-start gap-2">
                       <Phone className="w-5 h-5 text-[#555555] dark:text-[#AAAAAA] flex-shrink-0" />

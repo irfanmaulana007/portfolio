@@ -219,7 +219,7 @@ export function ContactSection({
                   </Text>
                   <div className="flex gap-4 mt-4 text-[#CA3142]">
                     <a
-                      href={socialLinks.github?.url ?? '#'}
+                      href={socialLinks.github?.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2 bg-[#F5F5F5] dark:bg-[#242424] rounded-sm hover:bg-[#CA3142]/10 transition-colors"
@@ -241,7 +241,7 @@ export function ContactSection({
                       </svg>
                     </a>
                     <a
-                      href={socialLinks.linkedin?.url ?? '#'}
+                      href={socialLinks.linkedin?.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2 bg-[#F5F5F5] dark:bg-[#242424] rounded-sm hover:bg-[#CA3142]/10 transition-colors"
@@ -264,7 +264,7 @@ export function ContactSection({
                       </svg>
                     </a>
                     <a
-                      href={socialLinks.twitter?.url ?? '#'}
+                      href={socialLinks.twitter?.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2 bg-[#F5F5F5] dark:bg-[#242424] rounded-sm hover:bg-[#CA3142]/10 transition-colors"
@@ -285,7 +285,7 @@ export function ContactSection({
                       </svg>
                     </a>
                     <a
-                      href={socialLinks.instagram?.url ?? '#'}
+                      href={socialLinks.instagram?.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2 bg-[#F5F5F5] dark:bg-[#242424] rounded-sm hover:bg-[#CA3142]/10 transition-colors"

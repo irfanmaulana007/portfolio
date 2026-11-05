@@ -258,10 +258,14 @@ const skills = [
   { name: 'CI/CD', level: 65 },
 ];
 
+// Create-only, like seedProjectsData: the DB is the source of truth once
+// seeded, so re-running must never clobber rows edited directly in the DB.
+// Production gets this same content automatically via the data migration in
+// migrations/20261105000000_add_site_content (keep the two in sync).
 async function seedProfileData() {
   await prisma.siteProfile.upsert({
     where: { id: 1 },
-    update: siteProfile,
+    update: {},
     create: { id: 1, ...siteProfile },
   });
 
@@ -269,7 +273,7 @@ async function seedProfileData() {
     const s = socialLinks[i];
     await prisma.socialLink.upsert({
       where: { platform: s.platform },
-      update: { url: s.url, label: s.label, sortOrder: i },
+      update: {},
       create: { ...s, sortOrder: i },
     });
   }
@@ -278,7 +282,7 @@ async function seedProfileData() {
     const n = navItems[i];
     await prisma.navItem.upsert({
       where: { href: n.href },
-      update: { name: n.name, sortOrder: i },
+      update: {},
       create: { ...n, sortOrder: i },
     });
   }
@@ -287,7 +291,7 @@ async function seedProfileData() {
     const sk = skills[i];
     await prisma.skill.upsert({
       where: { name: sk.name },
-      update: { level: sk.level, sortOrder: i },
+      update: {},
       create: { ...sk, sortOrder: i },
     });
   }
@@ -307,9 +311,12 @@ async function seedAdmin() {
     return;
   }
   const passwordHash = await bcrypt.hash(password, 12);
+  // Create-only: re-running the seed (e.g. to restore content) must NOT reset
+  // the password of an existing admin. Rotate passwords deliberately, not as a
+  // seed side effect.
   await prisma.adminUser.upsert({
     where: { email },
-    update: { passwordHash },
+    update: {},
     create: { email, passwordHash },
   });
   console.log(`[seed] admin user ready: ${email}`);
