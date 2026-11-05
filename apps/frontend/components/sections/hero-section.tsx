@@ -88,15 +88,21 @@ export function HeroSection() {
                 .filter(project => project.featured)
                 .map(project => (
                   <div key={project.id}>
-                    <Link href={project.demoUrl} target="_blank">
-                      <Text
-                        size="md"
-                        variant="secondary"
-                        className="transition-all duration-300 hover:!text-[#000000] dark:hover:!text-[#FFFFFF]"
-                      >
+                    {project.demoUrl ? (
+                      <Link href={project.demoUrl} target="_blank">
+                        <Text
+                          size="md"
+                          variant="secondary"
+                          className="transition-all duration-300 hover:!text-[#000000] dark:hover:!text-[#FFFFFF]"
+                        >
+                          {project.title}
+                        </Text>
+                      </Link>
+                    ) : (
+                      <Text size="md" variant="secondary">
                         {project.title}
                       </Text>
-                    </Link>
+                    )}
                   </div>
                 ))}
             </CardContent>

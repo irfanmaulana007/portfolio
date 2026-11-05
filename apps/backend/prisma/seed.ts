@@ -78,7 +78,13 @@ const seedProjects = [
     description:
       'A web-based platform for Noctua, featuring engaging gameplay mechanics, character customization, and social sharing capabilities. The game incorporates brand elements while providing an entertaining experience that drives user engagement and brand awareness.',
     image: '/images/project/noctua-platform.webp',
-    tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Shadcn UI', 'TanStack Query'],
+    tags: [
+      'Next.js',
+      'TypeScript',
+      'Tailwind CSS',
+      'Shadcn UI',
+      'TanStack Query',
+    ],
     demoUrl: 'https://noctua.gg/',
     codeUrl: '',
     date: '2024-03-01',
@@ -129,6 +135,78 @@ const seedProjects = [
     date: '2025-09-27',
     previewImageUrl: [],
     category: ProjectCategory.landing_page,
+    featured: true,
+  },
+  {
+    title: 'Hiji 2 Tilu',
+    description:
+      'A training and retreat ground website — "Grounded in Nature, Growing in Unity." Built with Next.js and a Strapi CMS backend, with content-managed pages, nature-focused visuals, and smooth animated browsing.',
+    image: '/images/project/hiji-2-tilu.webp',
+    tags: [
+      'Next.js',
+      'TypeScript',
+      'Tailwind CSS',
+      'Framer Motion',
+      'Strapi CMS',
+    ],
+    demoUrl: '',
+    codeUrl: '',
+    date: '2025-09-25',
+    previewImageUrl: ['/images/project/hiji-2-tilu.webp'],
+    category: ProjectCategory.landing_page,
+    featured: true,
+  },
+  {
+    title: 'Gym Assistant',
+    description:
+      'A personal training companion for organizing workouts and tracking progressive overload. Group training into workout days, add exercises with target sets and reps, log the weight lifted each session, and watch your strength trend over time.',
+    image: '/images/project/gym-assistant.webp',
+    tags: ['React', 'Vite', 'TypeScript', 'Go', 'PostgreSQL'],
+    demoUrl: '',
+    codeUrl: 'https://github.com/irfanmaulana007/gym-assistant',
+    date: '2026-09-09',
+    previewImageUrl: ['/images/project/gym-assistant.webp'],
+    category: ProjectCategory.dashboard,
+    featured: false,
+  },
+  {
+    title: 'Simagis',
+    description:
+      'A management information system dashboard for day-to-day operations — searchable data tables, barcode generation, Excel import/export, and interactive charts, with authenticated role-based access and reporting.',
+    image: '/images/project/simagis.webp',
+    tags: [
+      'React',
+      'Vite',
+      'TypeScript',
+      'TanStack Query',
+      'Tailwind CSS',
+      'Recharts',
+    ],
+    demoUrl: '',
+    codeUrl: '',
+    date: '2026-02-05',
+    previewImageUrl: ['/images/project/simagis.webp'],
+    category: ProjectCategory.dashboard,
+    featured: true,
+  },
+  {
+    title: 'Head Office Support System (HRIS)',
+    description:
+      'An enterprise HRIS and head-office support platform for a large government agency. Covers employee management, biometric attendance and check-in/out with single sign-on, document workflows, and operational dashboards — a Next.js web app backed by a Go API, PostgreSQL, and Kafka-based data sync.',
+    image: '/images/project/hris-system.webp',
+    tags: [
+      'Next.js',
+      'TypeScript',
+      'Tailwind CSS',
+      'TanStack Query',
+      'Go',
+      'PostgreSQL',
+    ],
+    demoUrl: '',
+    codeUrl: '',
+    date: '2025-03-12',
+    previewImageUrl: ['/images/project/hris-system.webp'],
+    category: ProjectCategory.dashboard,
     featured: true,
   },
 ];
@@ -194,7 +272,7 @@ main()
   .then(async () => {
     await prisma.$disconnect();
   })
-  .catch(async (e) => {
+  .catch(async e => {
     console.error('[seed] failed:', e);
     await prisma.$disconnect();
     process.exit(1);
