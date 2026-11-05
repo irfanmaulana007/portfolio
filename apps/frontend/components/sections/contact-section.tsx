@@ -6,7 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { motion } from 'framer-motion';
-import { personalInfo, socialLinks } from '@/lib/constants';
+import type {
+  PersonalInfoDTO,
+  SocialLinksDTO,
+} from '@portfolio/shared-types';
 import { Mail, MapPin, Phone } from 'lucide-react';
 import { Text } from '../ui/text';
 import { useState } from 'react';
@@ -14,7 +17,13 @@ import { submitContact } from '@/lib/api';
 
 type SubmitState = 'idle' | 'sending' | 'success' | 'error';
 
-export function ContactSection() {
+export function ContactSection({
+  personalInfo,
+  socialLinks,
+}: {
+  personalInfo: PersonalInfoDTO | null;
+  socialLinks: SocialLinksDTO;
+}) {
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -150,8 +159,11 @@ export function ContactSection() {
                   {status === 'error' && (
                     <Text size="sm" variant="brand">
                       {errorMessage} You can also email me directly at{' '}
-                      <a href={`mailto:${personalInfo.email}`} className="underline">
-                        {personalInfo.email}
+                      <a
+                        href={`mailto:${personalInfo?.email ?? ''}`}
+                        className="underline"
+                      >
+                        {personalInfo?.email}
                       </a>
                       .
                     </Text>
@@ -174,7 +186,7 @@ export function ContactSection() {
                       <Text size="caption" variant="secondary">
                         Location
                       </Text>
-                      <Text size="md">{personalInfo.location}</Text>
+                      <Text size="md">{personalInfo?.location}</Text>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
@@ -185,7 +197,7 @@ export function ContactSection() {
                       <Text size="caption" variant="secondary">
                         Email
                       </Text>
-                      <Text size="md">{personalInfo.email}</Text>
+                      <Text size="md">{personalInfo?.email}</Text>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
@@ -196,7 +208,7 @@ export function ContactSection() {
                       <Text size="caption" variant="secondary">
                         Phone
                       </Text>
-                      <Text size="md">{personalInfo.phone}</Text>
+                      <Text size="md">{personalInfo?.phone}</Text>
                     </div>
                   </div>
                 </div>
@@ -207,11 +219,11 @@ export function ContactSection() {
                   </Text>
                   <div className="flex gap-4 mt-4 text-[#CA3142]">
                     <a
-                      href={socialLinks.github.url}
+                      href={socialLinks.github?.url ?? '#'}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2 bg-[#F5F5F5] dark:bg-[#242424] rounded-sm hover:bg-[#CA3142]/10 transition-colors"
-                      aria-label={socialLinks.github.label}
+                      aria-label={socialLinks.github?.label ?? 'GitHub'}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -229,11 +241,11 @@ export function ContactSection() {
                       </svg>
                     </a>
                     <a
-                      href={socialLinks.linkedin.url}
+                      href={socialLinks.linkedin?.url ?? '#'}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2 bg-[#F5F5F5] dark:bg-[#242424] rounded-sm hover:bg-[#CA3142]/10 transition-colors"
-                      aria-label={socialLinks.linkedin.label}
+                      aria-label={socialLinks.linkedin?.label ?? 'LinkedIn'}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -252,11 +264,11 @@ export function ContactSection() {
                       </svg>
                     </a>
                     <a
-                      href={socialLinks.twitter.url}
+                      href={socialLinks.twitter?.url ?? '#'}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2 bg-[#F5F5F5] dark:bg-[#242424] rounded-sm hover:bg-[#CA3142]/10 transition-colors"
-                      aria-label={socialLinks.twitter.label}
+                      aria-label={socialLinks.twitter?.label ?? 'Twitter'}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -273,11 +285,11 @@ export function ContactSection() {
                       </svg>
                     </a>
                     <a
-                      href={socialLinks.instagram.url}
+                      href={socialLinks.instagram?.url ?? '#'}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2 bg-[#F5F5F5] dark:bg-[#242424] rounded-sm hover:bg-[#CA3142]/10 transition-colors"
-                      aria-label={socialLinks.instagram.label}
+                      aria-label={socialLinks.instagram?.label ?? 'Instagram'}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"

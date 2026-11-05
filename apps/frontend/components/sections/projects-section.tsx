@@ -23,8 +23,8 @@ export enum ProjectCategory {
   Game = 'game',
 }
 
-/** Fields the project card needs. Satisfied by both the API DTO and the
- *  static fallback list. */
+/** Fields the project card (and hero featured list) need. Satisfied by the
+ *  API project DTO. */
 export interface ProjectCardData {
   id: number;
   title: string;
@@ -36,6 +36,7 @@ export interface ProjectCardData {
   previewImageUrl: string[];
   category: string;
   date: string;
+  featured: boolean;
 }
 
 export function ProjectsSection({ projects }: { projects: ProjectCardData[] }) {

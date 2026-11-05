@@ -7,9 +7,9 @@ import { ChevronDown } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Text } from '../ui/text';
 import { Card, CardContent } from '../ui/card';
-import { projects } from '@/lib/constants';
+import type { ProjectCardData } from './projects-section';
 
-export function HeroSection() {
+export function HeroSection({ projects }: { projects: ProjectCardData[] }) {
   return (
     <section
       id="home"

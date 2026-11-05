@@ -12,9 +12,14 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { ToggleThemeButton } from '@/components/ui/theme-toggle';
-import { navItems, personalInfo } from '@/lib/constants';
+import type { NavItemDTO } from '@portfolio/shared-types';
 
-export function Header() {
+interface HeaderProps {
+  name: string;
+  navItems: NavItemDTO[];
+}
+
+export function Header({ name, navItems }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
 
@@ -42,7 +47,7 @@ export function Header() {
     window.addEventListener('scroll', handleScroll);
     handleScroll(); // Check initial scroll position
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [navItems]);
 
   return (
     <header
@@ -63,7 +68,7 @@ export function Header() {
               : 'text-2xl text-[#1A1A1A] dark:text-white'
           )}
         >
-          {personalInfo.name}
+          {name}
         </Link>
 
         {/* Desktop Navigation */}

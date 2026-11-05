@@ -89,6 +89,47 @@ export interface AdminMe {
   email: string;
 }
 
+/** Site owner's personal information (singleton). */
+export interface PersonalInfoDTO {
+  name: string;
+  role: string;
+  bio: string;
+  phone: string;
+  email: string;
+  location: string;
+  /** Year the owner started developing, e.g. "2018". */
+  developerSince: string;
+}
+
+/** A single social link (e.g. github, linkedin). */
+export interface SocialLinkDTO {
+  url: string;
+  label: string;
+}
+
+/** Social links keyed by platform. */
+export type SocialLinksDTO = Record<string, SocialLinkDTO>;
+
+/** A navigation item (anchor link to a page section). */
+export interface NavItemDTO {
+  name: string;
+  href: string;
+}
+
+/** A skill with a proficiency level (0–100). */
+export interface SkillDTO {
+  name: string;
+  level: number;
+}
+
+/** Aggregate of all site content served at GET /api/profile. */
+export interface ProfileDTO {
+  personalInfo: PersonalInfoDTO;
+  socialLinks: SocialLinksDTO;
+  navItems: NavItemDTO[];
+  skills: SkillDTO[];
+}
+
 /** Standard API error envelope. */
 export interface ApiError {
   error: {

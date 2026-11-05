@@ -6,35 +6,26 @@ import {
 } from '@/components/sections/projects-section';
 import { SkillsSection } from '@/components/sections/skills-section';
 import { ContactSection } from '@/components/sections/contact-section';
-import { fetchProjects } from '@/lib/api';
-import { projects as staticProjects } from '@/lib/constants';
-
-// Fallback used when the backend API is unavailable, so the public site
-// always renders a projects list.
-const fallbackProjects: ProjectCardData[] = staticProjects.map((p) => ({
-  id: p.id,
-  title: p.title,
-  description: p.description,
-  image: p.image,
-  tags: p.tags,
-  demoUrl: p.demoUrl || null,
-  codeUrl: p.codeUrl || null,
-  previewImageUrl: p.previewImageUrl,
-  category: p.category,
-  date: p.date,
-}));
+import { fetchProjects, fetchProfile } from '@/lib/api';
 
 export default async function Home() {
-  const apiProjects = await fetchProjects();
-  const projects: ProjectCardData[] = apiProjects ?? fallbackProjects;
+  const [apiProjects, profile] = await Promise.all([
+    fetchProjects(),
+    fetchProfile(),
+  ]);
+
+  const projects: ProjectCardData[] = apiProjects ?? [];
+  const personalInfo = profile?.personalInfo ?? null;
+  const socialLinks = profile?.socialLinks ?? {};
+  const skills = profile?.skills ?? [];
 
   return (
     <>
-      <HeroSection />
-      <AboutSection />
+      <HeroSection projects={projects} />
+      <AboutSection personalInfo={personalInfo} />
       <ProjectsSection projects={projects} />
-      <SkillsSection />
-      <ContactSection />
+      <SkillsSection skills={skills} />
+      <ContactSection personalInfo={personalInfo} socialLinks={socialLinks} />
     </>
   );
 }
