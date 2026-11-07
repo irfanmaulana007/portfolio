@@ -25,6 +25,10 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # server-side fetch reads API_BASE_URL at runtime instead.
 ARG NEXT_PUBLIC_API_BASE_URL
 ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
+# Sentry DSN is public and inlined into the browser bundle at build time.
+# Optional: omit to build without Sentry (the SDK no-ops when unset).
+ARG NEXT_PUBLIC_SENTRY_DSN
+ENV NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN
 COPY --from=deps /repo/node_modules ./node_modules
 COPY --from=deps /repo/apps/frontend/node_modules ./apps/frontend/node_modules
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./

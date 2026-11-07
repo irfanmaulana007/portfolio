@@ -27,6 +27,10 @@ export function createApp() {
   app.use('/api', apiRouter);
 
   app.use(notFound);
+
+  // errorHandler reports genuine 500s to Sentry itself (see middleware/error.ts).
+  // We deliberately do NOT use Sentry's automatic Express capture — it would log
+  // expected 4xx (validation / conflicts) as exceptions. See instrument.ts.
   app.use(errorHandler);
 
   return app;

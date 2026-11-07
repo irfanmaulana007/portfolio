@@ -1,3 +1,5 @@
+// Import first — initializes Sentry before any instrumented module loads.
+import './instrument';
 import { createApp } from './app';
 import { config } from './lib/config';
 import { prisma } from './lib/prisma';
