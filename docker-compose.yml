@@ -44,6 +44,8 @@ services:
       CORS_ORIGINS: http://localhost:3000,http://localhost:5173
       PORT: '3001'
       NODE_ENV: development
+      # Optional Sentry DSN (public id). Unset by default — Sentry no-ops.
+      SENTRY_DSN: ${SENTRY_DSN:-}
     ports:
       - '3001:3001'
 
@@ -54,6 +56,8 @@ services:
       args:
         # Inlined into the browser bundle at build time.
         NEXT_PUBLIC_API_BASE_URL: http://localhost:3001
+        # Optional Sentry DSN (public id). Unset by default — Sentry no-ops.
+        NEXT_PUBLIC_SENTRY_DSN: ${NEXT_PUBLIC_SENTRY_DSN:-}
     restart: unless-stopped
     depends_on:
       - backend
@@ -71,6 +75,8 @@ services:
       dockerfile: apps/admin/Dockerfile
       args:
         VITE_API_BASE_URL: http://localhost:3001
+        # Optional Sentry DSN (public id). Unset by default — Sentry no-ops.
+        VITE_SENTRY_DSN: ${VITE_SENTRY_DSN:-}
     restart: unless-stopped
     depends_on:
       - backend

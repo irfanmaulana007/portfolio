@@ -22,6 +22,10 @@ RUN pnpm install --frozen-lockfile --ignore-scripts --filter @portfolio/admin...
 FROM base AS builder
 ARG VITE_API_BASE_URL
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+# Sentry DSN is public and inlined into the bundle at build time.
+# Optional: omit to build without Sentry (the SDK no-ops when unset).
+ARG VITE_SENTRY_DSN
+ENV VITE_SENTRY_DSN=$VITE_SENTRY_DSN
 COPY --from=deps /repo/node_modules ./node_modules
 COPY --from=deps /repo/apps/admin/node_modules ./apps/admin/node_modules
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./

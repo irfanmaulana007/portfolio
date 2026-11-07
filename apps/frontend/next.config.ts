@@ -1,5 +1,8 @@
 import type { NextConfig } from 'next';
 import { PHASE_PRODUCTION_BUILD } from 'next/constants';
+// In @sentry/nextjs v11 the build-time helper lives on the /config subpath
+// (the main entry is runtime-only).
+import { withSentryConfig } from '@sentry/nextjs/config';
 import path from 'path';
 
 const nextConfig: NextConfig = {
@@ -13,7 +16,7 @@ const nextConfig: NextConfig = {
   transpilePackages: ['@portfolio/shared-types'],
 };
 
-export default (phase: string): NextConfig => {
+const config = (phase: string): NextConfig => {
   // NEXT_PUBLIC_API_BASE_URL is inlined into the client bundle at build time;
   // if it's missing the contact form silently points at localhost for every
   // visitor. Fail the production build fast rather than ship that.
@@ -25,3 +28,12 @@ export default (phase: string): NextConfig => {
   }
   return nextConfig;
 };
+
+// Wrap with Sentry so the SDK's build-time hooks (debug-code tree-shaking,
+// instrumentation wiring) are applied. Source-map upload only runs when
+// SENTRY_AUTH_TOKEN is present, so builds without it still succeed (upload is
+// simply skipped).
+export default withSentryConfig(config, {
+  // Keep the SDK's own build output quiet unless running in CI.
+  silent: !process.env.CI,
+});
