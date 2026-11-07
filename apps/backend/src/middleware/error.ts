@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
 import { Prisma } from '@prisma/client';
+import * as Sentry from '@sentry/node';
 
 export class AppError extends Error {
   status: number;
@@ -34,6 +35,10 @@ export const errorHandler = (
   }
 
   if (err instanceof AppError) {
+    // AppError carries an explicit status. 4xx are controlled client responses
+    // (auth, not-found, conflict) and must not reach Sentry; a 5xx AppError is a
+    // real server fault worth reporting. (All current throws are 4xx.)
+    if (err.status >= 500) Sentry.captureException(err);
     res.status(err.status).json({
       error: { code: err.code, message: err.message, details: err.details },
     });
@@ -54,6 +59,10 @@ export const errorHandler = (
     }
   }
 
+  // Everything above was an expected, mapped response (4xx/409/404). Reaching
+  // here means a genuine, unexpected server error — the only thing worth sending
+  // to Sentry. captureException is a no-op when Sentry is not initialized.
+  Sentry.captureException(err);
   console.error('[error]', err);
   res.status(500).json({ error: { code: 'internal_error', message: 'Something went wrong' } });
 };

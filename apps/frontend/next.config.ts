@@ -30,9 +30,11 @@ const config = (phase: string): NextConfig => {
 };
 
 // Wrap with Sentry so the SDK's build-time hooks (debug-code tree-shaking,
-// instrumentation wiring) are applied. Source-map upload only runs when
-// SENTRY_AUTH_TOKEN is present, so builds without it still succeed (upload is
-// simply skipped).
+// instrumentation wiring) are applied. Source-map upload is intentionally NOT
+// configured here: it needs `org` + `project` AND a `SENTRY_AUTH_TOKEN`, none of
+// which are set, so no upload happens and production stack traces stay minified.
+// Builds always succeed regardless. To enable readable traces later, add
+// `org`/`project` below (or SENTRY_ORG/SENTRY_PROJECT) plus SENTRY_AUTH_TOKEN.
 export default withSentryConfig(config, {
   // Keep the SDK's own build output quiet unless running in CI.
   silent: !process.env.CI,

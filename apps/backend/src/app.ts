@@ -2,7 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import * as Sentry from '@sentry/node';
 import { config, isProd } from './lib/config';
 import { apiRouter } from './routes';
 import { errorHandler, notFound } from './middleware/error';
@@ -29,10 +28,9 @@ export function createApp() {
 
   app.use(notFound);
 
-  // Report errors to Sentry before our JSON error handler formats the response.
-  // No-op unless Sentry was initialized (SENTRY_DSN set) in ./instrument.
-  Sentry.setupExpressErrorHandler(app);
-
+  // errorHandler reports genuine 500s to Sentry itself (see middleware/error.ts).
+  // We deliberately do NOT use Sentry's automatic Express capture — it would log
+  // expected 4xx (validation / conflicts) as exceptions. See instrument.ts.
   app.use(errorHandler);
 
   return app;

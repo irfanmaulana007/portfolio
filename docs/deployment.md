@@ -108,6 +108,30 @@ container port to **8080** for this app).
 
 > Secrets live only in Dokploy's env panel — never commit them.
 
+## Sentry monitoring (optional)
+
+All three apps report errors (and a 20% sample of traces) to Sentry when a DSN is
+set. Each app has its **own** Sentry project. The integration is **optional**: with
+no DSN set the SDK is bundled but sends nothing, so leaving these unset is a valid
+deploy.
+
+A DSN is a **public, non-secret** identifier, but set it **in Dokploy, never in a
+committed file** — a real DSN in `.env.example`/`.env` makes local and CI runs
+report to the production projects. The `.env.example` files therefore ship only a
+placeholder shape.
+
+| App                  | Variable                 | Where in Dokploy          |
+| -------------------- | ------------------------ | ------------------------- |
+| `portfolio-frontend` | `NEXT_PUBLIC_SENTRY_DSN` | **Build Arg** (inlined into the browser bundle) |
+| `portfolio-admin`    | `VITE_SENTRY_DSN`        | **Build Arg** (inlined into the browser bundle) |
+| `portfolio-backend`  | `SENTRY_DSN`             | **Runtime env** (read on boot) |
+
+Frontend/admin DSNs are inlined at build time, so — like the API URLs above — they
+must go in the **Build-time Variables / Build Args** panel; a runtime-only value
+never reaches the browser bundle. The backend reads `SENTRY_DSN` at runtime and
+takes its `environment` from `NODE_ENV`. Source-map upload is not configured, so
+production stack traces stay minified (see `apps/frontend/next.config.ts`).
+
 ## Auto-deploy & per-service watch paths
 
 All three apps point at the **same repo and branch**, so by default a single push

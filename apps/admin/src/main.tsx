@@ -6,8 +6,10 @@ import { AuthProvider } from './auth';
 import { App } from './App';
 import './styles.css';
 
-// No-op unless VITE_SENTRY_DSN is set (inlined at build time): local dev and
-// unconfigured builds send nothing.
+// When VITE_SENTRY_DSN (inlined at build time) is unset the SDK sends nothing,
+// but @sentry/react is still statically imported and bundled either way —
+// "no-op" means no events, not zero bundle cost. Sentry is enabled in
+// production here, so the bundle cost is expected.
 const dsn = import.meta.env.VITE_SENTRY_DSN;
 if (dsn) {
   Sentry.init({
