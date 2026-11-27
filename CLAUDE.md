@@ -81,6 +81,16 @@ clean and the change confirmed in the running app in a browser.
   [`git-workflow.md`](.claude/rules/git-workflow.md) and
   [`pr-labeling.md`](.claude/rules/pr-labeling.md).
 - **Security** — no hardcoded secrets (use env vars); never commit API keys.
+- **Claude Code plugins are opt-in** — [`.claude/settings.json`](.claude/settings.json)
+  only _registers_ third-party plugin marketplaces (`caveman`, `ponytail`,
+  `ui-ux-pro-max-skill`, `last30days-skill`, `mattpocock`); it enables no
+  plugin, because those sources are unpinned third-party repos whose hooks,
+  MCP servers, and skills would otherwise run in every contributor and agent
+  session. To use one (or `superpowers@claude-plugins-official`), review what
+  it ships, then enable it for yourself under `enabledPlugins` in your user
+  settings or an uncommitted `.claude/settings.local.json`. Whatever you
+  enable, the in-repo [`.claude/rules/`](.claude/rules/) and
+  [`.claude/skills/`](.claude/skills/) take precedence over plugin guidance.
 
 Authoritative rules: [`.claude/rules/`](.claude/rules/)
 (`development-best-practices.md`, `git-workflow.md`, `bug-fixing.md`,
