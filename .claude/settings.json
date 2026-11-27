@@ -18,12 +18,6 @@
         "repo": "nextlevelbuilder/ui-ux-pro-max-skill"
       }
     },
-    "last30days-skill": {
-      "source": {
-        "source": "github",
-        "repo": "mvanhorn/last30days-skill"
-      }
-    },
     "mattpocock": {
       "source": {
         "source": "github",
