@@ -30,13 +30,5 @@
         "repo": "mattpocock/skills"
       }
     }
-  },
-  "enabledPlugins": {
-    "caveman@caveman": true,
-    "ponytail@ponytail": true,
-    "ui-ux-pro-max@ui-ux-pro-max-skill": true,
-    "superpowers@claude-plugins-official": true,
-    "last30days@last30days-skill": true,
-    "mattpocock-skills@mattpocock": true
   }
 }
